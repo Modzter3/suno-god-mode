@@ -638,6 +638,7 @@ html.light .chip.suggested {
 /* Animations */
 .fade-in { animation: fadeIn 0.4s ease; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.openrouter-model-input { font-family: 'Fira Code', monospace; font-size: 0.85rem; }
 </style>
 </head>
 <body>
@@ -657,11 +658,13 @@ html.light .chip.suggested {
           <i class="fas fa-chevron-down chevron"></i>
         </div>
         <div class="card-body open">
-          <label>Model for concept &amp; song</label>
-          <select id="openRouterModel"></select>
+          <label>Model (live OpenRouter catalog)</label>
+          <input type="text" class="openrouter-model-input" list="openRouterModelDatalist" id="openRouterModelPicker" placeholder="Loading models…" autocomplete="off" spellcheck="false">
+          <datalist id="openRouterModelDatalist"></datalist>
+          <span id="openRouterModelStatus" style="display:block; margin-top:6px; font-size:11px; color:var(--text-muted); line-height:1.35"></span>
           <label style="margin-top:12px">Custom model ID (optional)</label>
-          <input type="text" id="openRouterModelCustom" placeholder="Overrides dropdown — e.g. meta-llama/llama-3.3-70b-instruct" autocomplete="off">
-          <p style="margin-top:8px; font-size:12px; color:var(--text-muted); line-height:1.4">Empty = server env <code style="font-size:11px">OPENROUTER_MODEL</code>, else <code style="font-size:11px">openai/gpt-4o-mini</code>. The API retries with fallback models if your pick has no live endpoints. IDs: <a href="https://openrouter.ai/models" target="_blank" rel="noopener noreferrer">openrouter.ai/models</a>.</p>
+          <input type="text" class="openrouter-model-input" id="openRouterModelCustom" placeholder="Overrides the field above — exact slug from openrouter.ai/models" autocomplete="off" spellcheck="false">
+          <p style="margin-top:8px; font-size:12px; color:var(--text-muted); line-height:1.4">Picker + datalist load from <code style="font-size:11px">GET /api/models</code> (same list as OpenRouter). Type to narrow. Empty picker + empty custom = server <code style="font-size:11px">OPENROUTER_MODEL</code> or <code style="font-size:11px">openai/gpt-4o-mini</code>, with API fallbacks if a slug has no endpoint.</p>
         </div>
       </div>
       <!-- Templates -->
@@ -1528,21 +1531,6 @@ const TOPIC_NARRATIVES = [
   { name: 'Altered Reality', categories: ['Dark & Existential', 'Nostalgia & Memory', 'Faith & Spirituality'] },
   { name: 'Transcendence Quest', categories: ['Faith & Spirituality', 'Celebration', 'Flex & Confidence'] }
 ];
-const OPENROUTER_MODEL_OPTIONS = [
-  { value: '', label: 'Server default (OPENROUTER_MODEL or openai/gpt-4o-mini)' },
-  { value: 'openai/gpt-4o-mini', label: 'GPT-4o mini (recommended)' },
-  { value: 'openai/gpt-4o', label: 'GPT-4o' },
-  { value: 'anthropic/claude-3.5-sonnet', label: 'Claude 3.5 Sonnet' },
-  { value: 'anthropic/claude-3.5-haiku', label: 'Claude 3.5 Haiku' },
-  { value: 'anthropic/claude-sonnet-4.5', label: 'Claude Sonnet 4.5' },
-  { value: 'anthropic/claude-opus-4.5', label: 'Claude Opus 4.5' },
-  { value: 'google/gemini-2.0-flash-001', label: 'Gemini 2.0 Flash' },
-  { value: 'meta-llama/llama-3.3-70b-instruct', label: 'Llama 3.3 70B Instruct' },
-  { value: 'mistralai/mistral-large-2411', label: 'Mistral Large' },
-  { value: 'deepseek/deepseek-chat', label: 'DeepSeek Chat' },
-  { value: 'deepseek/deepseek-r1', label: 'DeepSeek R1' },
-  { value: 'openrouter/auto', label: 'Auto (OpenRouter picks)' }
-];
 const SUNO_RULES = `You are an expert Suno AI song creator AND a music encyclopedia who deeply understands the sonic identity of every genre and subgenre. Generate a complete song with a creative title.
 CRITICAL FORMAT RULES:
 - (adlibs) in parentheses are sung ad-libs — place them naturally throughout verses and choruses
@@ -1583,6 +1571,28 @@ SECTION RULES:
 - Every section must start with a section tag before any lyrics
 - Stack relevant meta tags with pipes: [Chorus | anthemic | stacked harmonies]
 - Use category tags for precision: [Vocal: ...], [Instrumentation: ...], [Mix: ...]
+VERSE & SECTION LENGTH — GENRE-AUTHENTIC (MANDATORY):
+This is a full song, not a demo sketch. Do NOT output thin "verse" stubs (e.g. 2–4 lyric lines) unless the genre is deliberately ultra-minimal hardcore/powerviolence one-liner style.
+Default song flow for vocal tracks: optional [Intro] → [Verse 1] → optional [Pre-Chorus] (when genre uses it) → [Chorus] → [Verse 2] → optional [Verse 3] OR [Bridge] → [Chorus] / [Final Chorus] / [Outro]. Label every section.
+Line counts below mean lyric lines (not production tags). Match syllable density to BPM: fast tempos pack more syllables per line; slow tempos use fewer words per line but still fill the section.
+
+Genre heft (apply PRIMARY genre first; if SECONDARY genre is given, blend — e.g. pop chorus + rap verses → use rap verse line counts with pop hook):
+- Hip hop, rap, trap, drill, grime, phonk, boom bap, cloud rap, rage, Memphis, UK/NY drill, emo rap: 16–24 lines per verse is standard; storytelling or flex verses often 20–24. Verse 2 must be at least as long as verse 1 (usually match or go longer). Hooks/pre-hooks can be short; never shorten verses to compensate.
+- R&B, neo-soul, soul: 10–16 lines per verse; pre-chorus 4–8 lines; chorus repeatable 6–10 lines.
+- Pop, dance pop, electropop, synth pop, K-pop, J-pop (lyrical): 8–14 lines per verse; chorus 6–12 lines; post-chorus optional.
+- Rock, indie rock, alternative, grunge, shoegaze, emo (rock): 8–14 lines per verse; bridge 6–12 lines when present.
+- Metal (all), punk (except deliberate micro-song): 8–14 lines per verse; use shorter phrases if needed but keep section FULL.
+- Country, folk, bluegrass, americana, singer-songwriter: 10–18 lines per verse; narrative/story verses often 12–18.
+- Jazz vocal, blues, bossa, swing: 6–12 lines per verse; tag instrumental breaks [Instrumental] / [Solo] as the genre would.
+- House, techno, trance, DnB, dubstep, EDM (with vocals): verses often 8–12 lines; if minimal lyrics, include TWO full verses before the drop, not one skimpy verse.
+- Gospel, choir, worship vocal: 10–16 lines per verse; big repeatable chorus.
+- Ballad, acoustic pop: 10–16 lines per verse; allow emotional build.
+- Reggaeton, dancehall, dembow, Latin club: dense rhythmic lines — 12–20 short lines per verse or 10–14 longer lines; match perreo/dembow cadence.
+- Afrobeat, amapiano vocal, world vocal: 10–16 lines per verse; leave space for groove repeats.
+- Classical vocal, opera, cinematic choir: longer formal sections OK — 12–20+ lines per formal verse section as appropriate.
+- Hyperpop, industrial vocal: 8–14 lines per verse; chaos is fine but sections must still feel complete.
+
+Quality check before you output: count lines inside each [Verse]. If any verse falls below its genre minimum, rewrite until it meets the norm. Choruses can repeat; verses must not be anemic.
 DUET RULES (if duet is requested):
 - Style prompt must declare "This is a duet between [Name A] (male/female) and [Name B] (male/female)"
 - Add [Duet: Name A male and Name B female] at top of lyrics
@@ -1690,18 +1700,42 @@ let selectedRhymeScheme = '';
 function getOpenRouterModel() {
   var custom = document.getElementById('openRouterModelCustom').value.trim();
   if (custom) return custom;
-  var sel = document.getElementById('openRouterModel').value;
-  return sel || undefined;
+  var pick = document.getElementById('openRouterModelPicker').value.trim();
+  return pick || undefined;
 }
-function buildOpenRouterModelSelect() {
-  var sel = document.getElementById('openRouterModel');
-  sel.innerHTML = OPENROUTER_MODEL_OPTIONS.map(function(o) {
-    return '<option value="' + o.value.replace(/"/g, '&quot;') + '">' + o.label + '</option>';
-  }).join('');
+async function loadOpenRouterModels() {
+  var picker = document.getElementById('openRouterModelPicker');
+  var datalist = document.getElementById('openRouterModelDatalist');
+  var statusEl = document.getElementById('openRouterModelStatus');
+  if (statusEl) statusEl.textContent = 'Loading catalog from OpenRouter…';
+  try {
+    var res = await fetch('/api/models');
+    var j = await res.json();
+    if (!res.ok) throw new Error(typeof j.error === 'string' ? j.error : res.statusText);
+    datalist.innerHTML = '';
+    (j.data || []).forEach(function (m) {
+      var opt = document.createElement('option');
+      opt.value = m.id;
+      var lab = m.name || m.id;
+      if (m.context_length) lab += ' · ctx ' + m.context_length;
+      opt.label = lab;
+      datalist.appendChild(opt);
+    });
+    picker.placeholder = 'Type to search — pick any model ID';
+    if (statusEl) {
+      var n = j.data ? j.data.length : 0;
+      statusEl.textContent = n + ' models. Type to filter in the picker; custom field overrides.';
+    }
+  } catch (e) {
+    picker.placeholder = 'Paste model ID (catalog load failed)';
+    if (statusEl) {
+      statusEl.textContent = 'Catalog error: ' + (e.message || String(e)) + ' — paste a slug from openrouter.ai/models or use Custom below.';
+    }
+  }
 }
 function init() {
   initTheme();
-  buildOpenRouterModelSelect();
+  loadOpenRouterModels();
   buildTemplateGrid();
   populateSelect('genre1', GENRES, true);
   populateSelect('genre2', GENRES, true);
@@ -2202,7 +2236,7 @@ function resetAll() {
   document.getElementById('songConcept').value = '';
   document.getElementById('extraInstructions').value = '';
   document.getElementById('customInstruments').value = '';
-  document.getElementById('openRouterModel').value = '';
+  document.getElementById('openRouterModelPicker').value = '';
   document.getElementById('openRouterModelCustom').value = '';
   selectedInstruments.clear();
   document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
@@ -2300,6 +2334,11 @@ function buildPrompt() {
     prompt += 'Song Concept: Create an original, creative concept that fits the genre and mood.\n';
   }
   if (extra) prompt += 'Additional Instructions: ' + extra + '\n';
+  if (!isInstrumentalMode) {
+    prompt += '\nVERSE LENGTH (THIS REQUEST):\n';
+    prompt += 'Primary genre: ' + (g1 || '(choose to match concept)') + (g2 ? '; secondary / blend: ' + g2 : '') + '\n';
+    prompt += 'Apply the VERSE & SECTION LENGTH — GENRE-AUTHENTIC rules in SUNO_RULES exactly for these genres. Before you output, verify each [Verse] has at least the minimum line count for that genre; rewrite if any verse is thin.\n';
+  }
   if (isInstrumentalMode) {
     prompt += '\n⚡ INSTRUMENTAL MODE\n';
     prompt += 'Generate ONLY an instrumental track. You will output:\n';
