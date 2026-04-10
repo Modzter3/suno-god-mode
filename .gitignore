@@ -1,0 +1,8 @@
+node_modules/
+.vercel
+.env
+.env.local
+.env*.local
+_extracted.html
+_extract_html.js
+apply_openrouter_patch.js

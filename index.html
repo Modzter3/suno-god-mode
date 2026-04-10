@@ -1,0 +1,2546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Suno God Mode</title>
+<link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Exo+2:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root {
+  --accent: #00e5a0;
+  --accent-dim: #00e5a033;
+  --accent2: #ff3366;
+  --accent3: #ffd700;
+  --bg-deep: #060810;
+  --bg-card: #0e1117;
+  --bg-elevated: #161b24;
+  --bg-input: #1a2030;
+  --text: #e4e8ef;
+  --text-muted: #6b7894;
+  --border: #1e2a38;
+  --border-focus: #00e5a066;
+  --tag-color: #00e5a0;
+  --paren-color: #ff9f43;
+  --caps-color: #ff3366;
+}
+html.light {
+  --accent: #059669;
+  --accent-dim: #05966922;
+  --accent2: #e11d48;
+  --accent3: #d97706;
+  --bg-deep: #f0f2f5;
+  --bg-card: #ffffff;
+  --bg-elevated: #f8f9fb;
+  --bg-input: #eef0f4;
+  --text: #1a1a2e;
+  --text-muted: #6b7280;
+  --border: #d1d5db;
+  --border-focus: #05966666;
+  --tag-color: #059669;
+  --paren-color: #d97706;
+  --caps-color: #e11d48;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Exo 2', sans-serif;
+  background: var(--bg-deep);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--accent-dim) 1px, transparent 1px),
+    linear-gradient(90deg, var(--accent-dim) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+.app-container { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; padding: 16px; }
+/* Header */
+.header {
+  text-align: center;
+  padding: 28px 16px 20px;
+  margin-bottom: 20px;
+}
+.header h1 {
+  font-family: 'Audiowide', cursive;
+  font-size: clamp(1.8rem, 5vw, 2.8rem);
+  background: linear-gradient(135deg, var(--accent), #00b8d4, var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 3px;
+  margin-bottom: 6px;
+}
+.header p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-weight: 300;
+  letter-spacing: 1px;
+}
+/* Main layout */
+.main-grid {
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .main-grid { grid-template-columns: 1fr; }
+}
+/* Cards */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s;
+}
+.card-header:hover { background: var(--bg-elevated); }
+.card-header h3 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-header .chevron {
+  color: var(--text-muted);
+  transition: transform 0.3s;
+  font-size: 0.75rem;
+}
+.card-header.open .chevron { transform: rotate(180deg); }
+.card-body { padding: 0 18px 18px; display: none; }
+.card-body.open { display: block; }
+/* Form elements */
+label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+  margin-top: 12px;
+}
+label:first-child { margin-top: 0; }
+select, input[type="text"], input[type="number"], textarea {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 10px 14px;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 16px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+select:focus, input:focus, textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--border-focus);
+}
+select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7894' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+textarea { resize: vertical; min-height: 80px; }
+.row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+/* BPM slider */
+.bpm-row { display: flex; align-items: center; gap: 12px; }
+.bpm-row input[type="range"] {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  background: var(--bg-input);
+  border-radius: 3px;
+  outline: none;
+}
+.bpm-row input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px; height: 18px;
+  background: var(--accent);
+  border-radius: 50%;
+  cursor: pointer;
+}
+.bpm-val {
+  font-family: 'Fira Code', monospace;
+  font-size: 0.9rem;
+  color: var(--accent);
+  min-width: 55px;
+  text-align: right;
+}
+/* Template cards */
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 8px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.template-grid::-webkit-scrollbar { width: 5px; }
+.template-grid::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.tmpl-card {
+  background: var(--bg-elevated);
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s;
+  user-select: none;
+}
+.tmpl-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.tmpl-card.active { border-color: var(--accent); background: var(--accent-dim); }
+.tmpl-card .tmpl-icon { font-size: 1.4rem; margin-bottom: 4px; }
+.tmpl-card .tmpl-name { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+/* Instrument chips */
+.chip-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.chip {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+}
+.chip:hover { border-color: var(--accent); }
+.chip.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+/* Generate button */
+.gen-btn {
+  width: 100%;
+  padding: 16px;
+  margin-top: 20px;
+  background: linear-gradient(135deg, var(--accent), #00b8d4);
+  color: #060810;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Audiowide', cursive;
+  font-size: 1rem;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.gen-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px var(--accent-dim); }
+.gen-btn:active { transform: translateY(0); }
+.gen-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+/* Equalizer animation */
+.equalizer { display: flex; gap: 3px; height: 20px; align-items: flex-end; }
+.eq-bar {
+  width: 4px;
+  border-radius: 2px;
+  background: #060810;
+  animation: equalize 0.7s ease-in-out infinite;
+}
+.eq-bar:nth-child(2) { animation-delay: 0.12s; }
+.eq-bar:nth-child(3) { animation-delay: 0.24s; }
+.eq-bar:nth-child(4) { animation-delay: 0.08s; }
+.eq-bar:nth-child(5) { animation-delay: 0.2s; }
+@keyframes equalize {
+  0%, 100% { height: 4px; }
+  50% { height: 18px; }
+}
+/* Output panel */
+.output-panel { position: sticky; top: 16px; }
+.output-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.output-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+}
+.output-header h3 {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--accent);
+}
+.copy-btn {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-family: 'Exo 2', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+.copy-btn.copied { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+.output-body {
+  padding: 16px 18px;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.82rem;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+  min-height: 60px;
+  color: var(--text);
+  max-height: 500px;
+  overflow-y: auto;
+}
+.output-body::-webkit-scrollbar { width: 6px; }
+.output-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+/* Streaming area */
+.stream-area {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 16px;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.82rem;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 600px;
+  overflow-y: auto;
+  display: none;
+}
+.stream-area::-webkit-scrollbar { width: 6px; }
+.stream-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+/* Placeholder / empty state */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+}
+.empty-state i { font-size: 2.5rem; margin-bottom: 14px; opacity: 0.3; }
+.empty-state p { font-size: 0.85rem; }
+/* Loading overlay */
+.loading-state {
+  text-align: center;
+  padding: 50px 20px;
+  display: none;
+}
+.loading-state p {
+  margin-top: 14px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+@keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+/* Tag Reference modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 100;
+  display: none;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 16px;
+  overflow-y: auto;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 700px;
+  max-height: 80vh;
+  overflow-y: auto;
+  animation: modalIn 0.3s ease;
+}
+@keyframes modalIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+.modal-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--bg-card);
+  z-index: 1;
+}
+.modal-top h2 {
+  font-family: 'Audiowide', cursive;
+  font-size: 1.1rem;
+  color: var(--accent);
+}
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+.modal-close:hover { color: var(--text); }
+.modal-content { padding: 20px 24px; }
+.format-btn {
+  background: var(--bg-elevated);
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  cursor: pointer;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.format-btn:hover { border-color: var(--accent); color: var(--accent); }
+.format-btn.active { border-color: var(--accent); background: var(--accent-dim); color: var(--accent); }
+.format-btn i { font-size: 1.5rem; margin-bottom: 6px; display: block; }
+.tag-category { margin-bottom: 20px; }
+.tag-category h4 {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--accent2);
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+.tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag-item {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.7rem;
+  color: var(--tag-color);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.tag-item:hover { border-color: var(--accent); background: var(--accent-dim); }
+/* Topic selector */
+.topic-filter-row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+.topic-filter-row select { flex: 1; }
+.topic-surprise {
+  background: linear-gradient(135deg, var(--accent-dim), rgba(255,51,102,0.12));
+  border: 1px solid var(--accent);
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 0.75rem;
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 600;
+  color: var(--accent);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.topic-surprise:hover { transform: scale(1.05); box-shadow: 0 0 12px var(--accent-dim); }
+.topic-chips-wrap {
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.topic-chips-wrap::-webkit-scrollbar { width: 4px; }
+.topic-chips-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.topic-cat-label {
+  display: block;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--accent2);
+  margin: 10px 0 5px;
+}
+.topic-cat-label:first-child { margin-top: 0; }
+.selected-topics-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 8px;
+}
+.selected-topic-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--accent-dim);
+  border: 1px solid var(--accent);
+  border-radius: 14px;
+  padding: 3px 10px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--accent);
+  animation: fadeIn 0.2s ease;
+}
+.selected-topic-tag .remove-topic {
+  cursor: pointer;
+  opacity: 0.7;
+  font-size: 0.65rem;
+  transition: opacity 0.2s;
+}
+.selected-topic-tag .remove-topic:hover { opacity: 1; }
+.chip.suggested {
+  border-color: var(--accent3);
+  color: var(--accent3);
+  background: rgba(255,215,0,0.08);
+  box-shadow: 0 0 6px rgba(255,215,0,0.15);
+}
+html.light .chip.suggested {
+  background: rgba(217,119,6,0.08);
+  box-shadow: 0 0 6px rgba(217,119,6,0.12);
+}
+.chip.suggested:hover { border-color: var(--accent3); transform: translateY(-1px); }
+.chip.suggested.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); box-shadow: none; }
+.topic-cat-label.suggested { color: var(--accent3); }
+/* Syntax highlighting */
+.hl-bracket { color: var(--tag-color); font-weight: 500; }
+.hl-paren { color: var(--paren-color); }
+.hl-caps { color: var(--caps-color); font-weight: 700; }
+/* Notification toast */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--accent);
+  color: #060810;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  z-index: 200;
+  transition: transform 0.3s ease;
+  pointer-events: none;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+/* Action buttons row */
+.action-row { display: flex; gap: 10px; margin-bottom: 16px; }
+.action-btn {
+  flex: 1;
+  padding: 10px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-muted);
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.action-btn:hover { border-color: var(--accent); color: var(--accent); }
+/* Error state */
+.error-msg {
+  background: rgba(255,51,102,0.1);
+  border: 1px solid var(--accent2);
+  border-radius: 8px;
+  padding: 14px 18px;
+  color: var(--accent2);
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+  display: none;
+}
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+/* Artist display */
+.artist-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, var(--accent-dim), rgba(255,51,102,0.08));
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-top: 16px;
+  animation: fadeIn 0.3s ease;
+}
+.artist-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.artist-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+}
+.artist-name {
+  font-family: 'Audiowide', cursive;
+  font-size: 1.05rem;
+  color: var(--accent);
+  letter-spacing: 1px;
+}
+.artist-reroll {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+.artist-reroll:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: rotate(15deg);
+}
+/* Concepting animation */
+.concepting {
+  background: linear-gradient(90deg, var(--bg-input) 0%, var(--accent-dim) 50%, var(--bg-input) 100%) !important;
+  background-size: 200% 100% !important;
+  animation: conceptShimmer 1.5s ease-in-out infinite !important;
+  border-color: var(--accent) !important;
+}
+@keyframes conceptShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+/* Animations */
+.fade-in { animation: fadeIn 0.4s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+<div class="app-container">
+  <!-- Header -->
+  <div class="header">
+    <h1><i class="fas fa-bolt" style="font-size:0.8em"></i> SUNO GOD MODE</h1>
+    <p>AI-powered song generator with style prompts, meta tags & lyric formatting</p>
+  </div>
+  <div class="main-grid">
+    <!-- ==================== CONFIG PANEL ==================== -->
+    <div class="config-panel">
+      <!-- Templates -->
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-header open" onclick="toggleCard(this)">
+          <h3><i class="fas fa-layer-group"></i> Quick Templates</h3>
+          <i class="fas fa-chevron-down chevron"></i>
+        </div>
+        <div class="card-body open">
+          <div class="template-grid" id="templateGrid"></div>
+        </div>
+      </div>
+      <!-- Genre -->
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-header open" onclick="toggleCard(this)">
+          <h3><i class="fas fa-music"></i> Genre</h3>
+          <i class="fas fa-chevron-down chevron"></i>
+        </div>
+        <div class="card-body open">
+          <div style="margin-bottom:12px; display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px">
+            <div style="flex:1; min-width:200px">
+              <label style="display:flex; align-items:center; gap:8px; margin-bottom:0; cursor:pointer; font-weight:500">
+                <input type="checkbox" id="mashupToggle" onchange="setMashupMode(this.checked)" style="margin:0; cursor:pointer; width:18px; height:18px">
+                🔥 Genre Mashup Mode
+              </label>
+              <p style="margin-top:6px; font-size:12px; color:var(--text-secondary)">Blend two genres for epic hybrid tracks</p>
+            </div>
+            <button id="randomizeBtn" style="display:none; padding:8px 16px; background:linear-gradient(135deg, #ff6b6b, #ee5a6f); color:white; border:none; border-radius:6px; cursor:pointer; font-weight:600; font-size:13px; white-space:nowrap; transition:all 0.2s" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" onclick="randomizeFullMashup()">
+              🎲 Full Chaos Mode
+            </button>
+          </div>
+          <div class="row-2">
+            <div style="position:relative">
+              <label>Primary Genre</label>
+              <div style="display:flex; gap:6px; align-items:flex-end">
+                <select id="genre1" style="flex:1"></select>
+                <button id="genre1LockBtn" onclick="toggleGenre1Lock()" style="padding:6px 10px; background:transparent; border:1px solid var(--border-color); border-radius:4px; cursor:pointer; font-size:16px; line-height:1; transition:all 0.2s" title="Lock genre 1">
+                  🔓
+                </button>
+              </div>
+            </div>
+            <div id="genre2Container" style="display:none">
+              <label>Mashup With</label>
+              <div style="display:flex; gap:6px; align-items:flex-end">
+                <select id="genre2" style="flex:1"></select>
+                <button id="genre2LockBtn" onclick="toggleGenre2Lock()" style="padding:6px 10px; background:transparent; border:1px solid var(--border-color); border-radius:4px; cursor:pointer; font-size:16px; line-height:1; transition:all 0.2s" title="Lock genre 2">
+                  🔓
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Mood & Energy -->
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-header open" onclick="toggleCard(this)">
+          <h3><i class="fas fa-heart-pulse"></i> Mood & Energy</h3>
+          <i class="fas fa-chevron-down chevron"></i>
+        </div>
+        <div class="card-body open">
+          <div class="row-2">
+            <div>
+              <label>Mood</label>
+              <select id="mood"></select>
+            </div>
+            <div>
+              <label>Energy</label>
+              <select id="energy"></select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Musical Settings -->
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-header" onclick="toggleCard(this)">
+          <h3><i class="fas fa-sliders-h"></i> Musical Settings</h3>
+          <i class="fas fa-chevron-down chevron"></i>
+        </div>
+        <div class="card-body">
+          <label>BPM</label>
+          <div class="bpm-row">
+            <input type="range" id="bpmSlider" min="60" max="220" value="120">
+            <span class="bpm-val" id="bpmVal">120</span>
+          </div>
+          <div class="row-2">
+            <div>
+              <label>Key</label>
+              <select id="keySelect"></select>
+            </div>
+            <div>
+              <label>Time Signature</label>
+              <select id="timeSig">
+                <option value="4/4">4/4 (Standard)</option>
+                <option value="3/4">3/4 (Waltz)</option>
+                <option value="6/8">6/8 (Compound)</option>
+                <option value="7/8">7/8 (Odd meter)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Instruments -->
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-header" onclick="toggleCard(this)">
+          <h3><i class="fas fa-guitar"></i> Instruments</h3>
+          <i class="fas fa-chevron-down chevron"></i>
+        </div>
+        <div class="card-body">
+          <label>Click to select (or type custom below)</label>
+          <div class="chip-container" id="instrumentChips"></div>
+          <label style="margin-top:12px">Custom Instruments</label>
+          <input type="text" id="customInstruments" placeholder="e.g. Theremin, Dulcimer, Sitar">
+        </div>
+      </div>
+      <!-- Vocals -->
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-header" onclick="toggleCard(this)">
+          <h3><i class="fas fa-microphone-alt"></i> Vocal Settings</h3>
+          <i class="fas fa-chevron-down chevron"></i>
+        </div>
+        <div class="card-body">
+          <div class="row-2">
+            <div>
+              <label>Vocal Type</label>
+              <select id="vocalType">
+                <option value="">Auto</option>
+                <option value="male">Male Vocal</option>
+                <option value="female">Female Vocal</option>
+                <option value="duet">Duet</option>
+                <option value="choir">Choir</option>
+                <option value="instrumental">Instrumental (No Vocals)</option>
+              </select>
+            </div>
+            <div>
+              <label>Vocal Style</label>
+              <select id="vocalStyle">
+                <option value="">Auto</option>
+                <option value="Rap">Rap</option>
+                <option value="Whisper">Whisper</option>
+                <option value="Belting">Belting</option>
+                <option value="Falsetto">Falsetto</option>
+                <option value="Crooning">Crooning</option>
+                <option value="Growl">Growl</option>
+                <option value="Operatic">Operatic</option>
+                <option value="Spoken word">Spoken Word</option>
+                <option value="Chant vocals">Chant</option>
+                <option value="Scat">Scat</option>
+                <option value="Autotuned delivery">Autotuned</option>
+                <option value="Raspy lead vocal">Raspy</option>
+                <option value="Screaming">Screaming</option>
+                <option value="Yelling">Yelling</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Instrumental Mode Toggle -->
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-header" onclick="toggleCard(this)">
+          <h3><i class="fas fa-music"></i> Generation Mode</h3>
+          <i class="fas fa-chevron-down chevron"></i>
+        </div>
+        <div class="card-body">
+          <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap">
+            <label style="display:flex; align-items:center; gap:8px; margin:0; cursor:pointer; font-weight:500">
+              <input type="radio" name="modeSelect" value="with-lyrics" checked onchange="setInstrumentalMode(false)" style="margin:0; cursor:pointer">
+              With Lyrics
+            </label>
+            <label style="display:flex; align-items:center; gap:8px; margin:0; cursor:pointer; font-weight:500">
+              <input type="radio" name="modeSelect" value="instrumental" onchange="setInstrumentalMode(true)" style="margin:0; cursor:pointer">
+              Instrumental Only
+            </label>
+          </div>
+          <p style="margin-top:8px; font-size:13px; color:var(--text-secondary); line-height:1.4">Instrumental mode generates a title, style prompt, and slider settings without lyrics — perfect for ambient, electronic, cinematic, and other genres where instrumentals shine.</p>
+        </div>
+      </div>
+      <!-- Rhyme Scheme Selector -->
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-header" onclick="toggleCard(this)">
+          <h3><i class="fas fa-font"></i> Rhyme Scheme</h3>
+          <i class="fas fa-chevron-down chevron"></i>
+        </div>
+        <div class="card-body">
+          <label>Lyric Structure</label>
+          <select id="rhymeSchemeSelect" onchange="setRhymeScheme(this.value)">
+            <option value="">— Auto-detect from genre —</option>
+            <option value="AABB">AABB - Couplets</option>
+            <option value="ABAB">ABAB - Alternating</option>
+            <option value="ABCB">ABCB - Simple</option>
+            <option value="ABBA">ABBA - Enclosed</option>
+            <option value="AAAA">AAAA - Monorhyme</option>
+            <option value="Free Verse">Free Verse - Natural Flow</option>
+          </select>
+          <p id="rhymeSchemeDesc" style="margin-top:8px; font-size:13px; color:var(--text-secondary); line-height:1.4">Scheme will be suggested based on your selected genre.</p>
+        </div>
+      </div>
+      <!-- Topic Selector -->
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-header open" onclick="toggleCard(this)">
+          <h3><i class="fas fa-compass"></i> Topic</h3>
+          <i class="fas fa-chevron-down chevron"></i>
+        </div>
+        <div class="card-body open">
+          <div class="topic-filter-row">
+            <select id="topicCategory" onchange="filterTopics()">
+              <option value="all">All Categories</option>
+            </select>
+            <button class="topic-surprise" onclick="surpriseTopics()"><i class="fas fa-dice"></i> Surprise Me</button>
+          </div>
+          <div class="topic-chips-wrap">
+            <div id="topicChipsContainer"></div>
+          </div>
+          <div class="selected-topics-bar" id="selectedTopicsBar"></div>
+        </div>
+      </div>
+      <!-- Song Concept -->
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-header open" onclick="toggleCard(this)">
+          <h3><i class="fas fa-pen-fancy"></i> Song Concept</h3>
+          <i class="fas fa-chevron-down chevron"></i>
+        </div>
+        <div class="card-body open">
+          <label>What's your song about?</label>
+          <textarea id="songConcept" rows="4" placeholder="Describe the theme, story, or emotion. e.g. 'A late-night drive through neon-lit streets, feeling free for the first time after a breakup...'"></textarea>
+          <label>Additional Instructions (optional)</label>
+          <input type="text" id="extraInstructions" placeholder="e.g. Include a guitar solo, add ad-libs, make the bridge emotional">
+        </div>
+      </div>
+      <!-- Artist Display -->
+      <div class="artist-display" id="artistDisplay" style="display:none">
+        <div class="artist-info">
+          <span class="artist-label">CHANNELING</span>
+          <span class="artist-name" id="artistName"></span>
+        </div>
+        <button class="artist-reroll" onclick="rerollArtist()" title="Pick a different artist">
+          <i class="fas fa-dice"></i>
+        </button>
+      </div>
+      <!-- Generate -->
+      <button class="gen-btn" id="generateBtn" onclick="generateSong()">
+        <i class="fas fa-bolt"></i> GENERATE SONG
+      </button>
+    </div>
+    <!-- ==================== OUTPUT PANEL ==================== -->
+    <div class="output-panel">
+      <!-- Action bar -->
+      <div class="action-row">
+        <button class="action-btn" onclick="openTagReference()">
+          <i class="fas fa-tags"></i> Tag Reference
+        </button>
+        <button class="action-btn" onclick="randomizeSettings()">
+          <i class="fas fa-dice"></i> Randomize
+        </button>
+        <button class="action-btn" onclick="resetAll()">
+          <i class="fas fa-rotate-left"></i> Reset
+        </button>
+      </div>
+      <!-- Error -->
+      <div class="error-msg" id="errorMsg"></div>
+      <!-- Loading -->
+      <div class="loading-state" id="loadingState">
+        <div class="equalizer" style="justify-content:center">
+          <div class="eq-bar"></div>
+          <div class="eq-bar"></div>
+          <div class="eq-bar"></div>
+          <div class="eq-bar"></div>
+          <div class="eq-bar"></div>
+        </div>
+        <p>Composing your masterpiece...</p>
+      </div>
+      <!-- Streaming area -->
+      <div class="stream-area" id="streamArea"></div>
+      <!-- Empty state -->
+      <div class="empty-state" id="emptyState">
+        <i class="fas fa-waveform-lines"></i>
+        <p>Configure your song and hit <strong>Generate</strong> to create<br>Suno-optimized style prompts, lyrics, &amp; instrumentals</p>
+      </div>
+      <!-- Parsed output sections -->
+      <div id="outputSections" style="display:none">
+        <!-- Song Title -->
+        <div class="output-section fade-in">
+          <div class="output-header">
+            <h3><i class="fas fa-heading"></i> Song Title</h3>
+            <button class="copy-btn" onclick="copySection('titleContent', this)">
+              <i class="fas fa-copy"></i> Copy
+            </button>
+          </div>
+          <div class="output-body" id="titleContent"></div>
+        </div>
+        <!-- Style Prompt -->
+        <div class="output-section fade-in" style="animation-delay:0.05s">
+          <div class="output-header">
+            <h3><i class="fas fa-wand-magic-sparkles"></i> Style Prompt</h3>
+            <button class="copy-btn" onclick="copySection('styleContent', this)">
+              <i class="fas fa-copy"></i> Copy
+            </button>
+          </div>
+          <div class="output-body" id="styleContent"></div>
+        </div>
+        <!-- Lyrics -->
+        <div class="output-section fade-in" style="animation-delay:0.1s">
+          <div class="output-header">
+            <h3><i class="fas fa-align-left"></i> Lyrics</h3>
+            <button class="copy-btn" onclick="copySection('lyricsContent', this)">
+              <i class="fas fa-copy"></i> Copy
+            </button>
+          </div>
+          <div class="output-body" id="lyricsContent" style="max-height:700px"></div>
+        </div>
+        <!-- Slider Settings -->
+        <div class="output-section fade-in" style="animation-delay:0.15s">
+          <div class="output-header">
+            <h3><i class="fas fa-gauge-high"></i> Slider Settings</h3>
+          </div>
+          <div class="output-body" id="sliderContent"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Tag Reference Modal -->
+<div class="modal-overlay" id="tagModal">
+  <div class="modal">
+    <div class="modal-top">
+      <h2>Tag Reference</h2>
+      <button class="modal-close" onclick="closeTagReference()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-content" id="tagContent"></div>
+  </div>
+</div>
+<!-- Toast -->
+<div class="toast" id="toast">Copied!</div>
+<script>
+/* ===== DATA ===== */
+const GENRES = {
+  'Electronic & Dance': ['EDM','House','Deep House','Tech House','Techno','Trance','Dubstep','Drum and Bass','Ambient','Synthwave','Retrowave','Chillwave','Future Bass','Electro','Industrial','Downtempo','Hardstyle','Disco','Italo Disco','Cosmic Disco','Acid House','Eurodance','Synth Punk','Krautrock','Dub'],
+  'Hip-Hop & R&B': ['Hip Hop','Rap','Boom Bap','Trap','Lo-fi Hip Hop','R&B','Neo-Soul','Soul','Funk','Phonk'],
+  'Rock & Alternative': ['Rock','Classic Rock','Indie Rock','Alternative Rock','Pop Rock','Hard Rock','Punk Rock','Post-Punk','Grunge','Metal','Heavy Metal','Progressive Rock','Psychedelic Rock','Shoegaze','Emo','Nu Metal','Power Metal','Glam Rock','Hair Metal','Thrash Metal','New Wave','Britpop','Madchester'],
+  'Pop & Mainstream': ['Pop','Synth Pop','Electropop','Indie Pop','Dream Pop','Art Pop','Dance Pop','K-Pop','J-Pop','City Pop'],
+  'Country & Folk': ['Country','Modern Country','Bluegrass','Folk','Indie Folk','Americana','Singer-Songwriter','Celtic'],
+  'Jazz & Blues': ['Jazz','Smooth Jazz','Bebop','Jazz Fusion','Bossa Nova','Swing','Blues','Delta Blues','Doo Wop'],
+  'World & Latin': ['Afrobeat','Reggae','Dancehall','Latin','Salsa','Reggaeton','Flamenco','World Music'],
+  'Classical & Orchestral': ['Classical','Orchestral','Cinematic','Neoclassical','Opera','Minimalist']
+};
+const MOODS = ['Uplifting','Melancholic','Haunting','Dark','Joyful','Nostalgic','Romantic','Intense','Dreamy','Peaceful','Anxious','Euphoric','Mysterious','Aggressive','Playful','Epic','Bittersweet','Triumphant'];
+const ENERGIES = ['Low','Chill','Medium','Driving','High','Explosive','Building','Frantic'];
+const KEYS = ['C major','C minor','C# minor','D major','D minor','Eb major','E major','E minor','F major','F minor','F# minor','G major','G minor','Ab major','A major','A minor','Bb major','B minor'];
+const INSTRUMENTS = [
+  'Piano','Electric Piano','Synth','Analog Synth','Synth Pad','Acoustic Guitar',
+  'Electric Guitar','Distorted Guitar','Bass Guitar','Synth Bass','808s',
+  'Drums','Electronic Drums','Hi-hats','Violin','Strings','Cello',
+  'Saxophone','Trumpet','Brass Section','Flute','Harmonica','Organ',
+  'Ukulele','Banjo','Harp','Orchestra','Choir Vocals','Taiko Drums',
+  'Congas','Steel Drums','Sitar','Mandolin','Slide Guitar','Tabla',
+  'Djembe','Kalimba','Accordion','Fiddle','Marimba','Theremin'
+];
+const TOPICS = {
+  'Love & Relationships': ['New crush','Toxic situationship','Growing apart','Caught cheating','Secret affair','Ex still texting','Long distance','First date nerves','On-again off-again','Forbidden love','Rebound','Divorce papers','Codependency','Love triangle','Ghosted','Happy new love','Proposal moment','Wedding day bliss','Deep connection','Unconditional love','Falling deeper','Perfect match','Dancing in love','Growing together','Soulmate found','Second chances in love','Forever kind of love','Celebrating love','Loyalty and devotion','Trust and commitment'],
+  'Flex & Confidence': ['Come-up story','Self-made','Glow up','Revenge era','Boss mode','Stunting on doubters','New money','Untouchable','Victory lap','Drip check','Top of the food chain','Built different'],
+  'Personal Struggle': ['Addiction','Mental health','Identity crisis','Imposter syndrome','Burnout','Starting over','Trust issues','Anger management','Loneliness in a crowd','Therapy session','Relapse','Insomnia','Anxiety spiral'],
+  'Nostalgia & Memory': ['Hometown','Childhood friend','Old photos','First car','Summer of youth','School days','The one that got away','Before the fame','Grandparents house','Mixtape from an ex','Polaroid memories','Moving day'],
+  'Night Life & Vibes': ['After-hours','Road trip','House party','Solo night out','Last call','Rooftop at 3AM','Festival weekend','Uber ride home','Pregame energy','Casino night','Dive bar regular','Sunrise comedown'],
+  'Street & Hustle': ['Loyalty and betrayal','Street politics','Paranoia','Trap house tales','Getaway driver','Corner store chronicles','Block anthem','Snitch culture','Court date','Bail money','Probation','Opps lurking'],
+  'Social Commentary': ['Class divide','Fake people','System is rigged','Small-town politics','Internet culture','Cancel culture','Gentrification','Rat race','Surveillance state','Algorithm prison','Poverty line','Wage theft'],
+  'Loss & Grief': ['Death of a friend','End of an era','Fading friendship','Moving away','Empty chair at dinner','Last voicemail','Funeral suit','Missing person','Overdose memorial','Sold the family home','Forgotten grave'],
+  'Celebration': ['Made it out','Wedding day','New chapter','Birthday anthem','Graduation','Promotion','Baby on the way','Homecoming','First million','Clean and sober','Remission','New apartment keys'],
+  'Dark & Existential': ['Inner demons','Existential dread','Sleep paralysis','Descent into madness','Voices in my head','Purgatory','The void','Doomsday clock','Simulation theory','Intrusive thoughts','Liminal spaces','Final form'],
+  'Faith & Spirituality': ['Praising Yah','Testimony','Spiritual warfare','Backsliding and redemption','Walking by faith','The narrow path','Worship anthem','Deliverance','Crying out to Yah','Prodigal return','Anointed','Spiritual breakthrough','Psalm of the broken','Yah is my refuge','Valley of decision','Fasting and prayer','Armor of Yah','Grace and mercy','Psalm of thanksgiving','Redeemed and restored','God\'s love never fails','Jesus saves','Gospel truth','Heavenly peace','Biblical promises','Covenant love','God\'s plan and purpose','Light in darkness','Divine protection','Blessed and thankful','Resurrection hope','Christ\'s sacrifice','Living for Yah','Kingdom of heaven','Faithfulness rewarded'],
+  'Nature & Place': ['Desert highway','Mountain cabin','Ocean at midnight','Abandoned mall','Rainy alleyway','Cornfield at dusk','Frozen lake','Subway platform','Rooftop garden','Ghost town','Lighthouse keeper','Wildfire sky'],
+  'Rebellion & Freedom': ['Running away','Dropping out','Burning bridges','Middle finger anthem','Outlaw life','Against the grain','No rules tonight','Quitting my job','Skipping town','Fake ID summer','Bail on the wedding','Off the grid'],
+  'Dance & Movement': ['On the dancefloor','Getting lost in the music','Bodies moving together','Losing yourself tonight','Sweat and rhythm','The drop hits','Spinning circles','Feet off the ground','Music takes over','One more dance','Hypnotized by the beat','Dancing till sunrise','Connected to the groove','Freeing your body','The bass controls you']
+};
+const GENRE_TOPICS = {
+  'EDM': ['Night Life & Vibes','Dance & Movement','Celebration','Love & Relationships'],
+  'House': ['Night Life & Vibes','Dance & Movement','Celebration','Love & Relationships'],
+  'Deep House': ['Night Life & Vibes','Dance & Movement','Love & Relationships','Nostalgia & Memory'],
+  'Tech House': ['Night Life & Vibes','Dance & Movement','Celebration'],
+  'Techno': ['Night Life & Vibes','Dance & Movement','Dark & Existential','Rebellion & Freedom'],
+  'Trance': ['Night Life & Vibes','Dance & Movement','Love & Relationships','Celebration'],
+  'Dubstep': ['Night Life & Vibes','Dance & Movement','Dark & Existential','Rebellion & Freedom'],
+  'Drum and Bass': ['Night Life & Vibes','Dance & Movement','Rebellion & Freedom','Street & Hustle'],
+  'Ambient': ['Nature & Place','Dark & Existential','Personal Struggle'],
+  'Synthwave': ['Nostalgia & Memory','Night Life & Vibes','Nature & Place'],
+  'Retrowave': ['Nostalgia & Memory','Night Life & Vibes','Nature & Place'],
+  'Chillwave': ['Nostalgia & Memory','Nature & Place','Love & Relationships'],
+  'Future Bass': ['Night Life & Vibes','Love & Relationships','Celebration'],
+  'Electro': ['Night Life & Vibes','Rebellion & Freedom','Dark & Existential'],
+  'Industrial': ['Dark & Existential','Rebellion & Freedom','Social Commentary'],
+  'Downtempo': ['Nature & Place','Nostalgia & Memory','Personal Struggle'],
+  'Hardstyle': ['Night Life & Vibes','Dance & Movement','Celebration','Rebellion & Freedom'],
+  'Glam Rock': ['Rebellion & Freedom','Night Life & Vibes','Flex & Confidence'],
+  'Hair Metal': ['Rebellion & Freedom','Celebration','Flex & Confidence'],
+  'Thrash Metal': ['Dark & Existential','Rebellion & Freedom','Personal Struggle'],
+  'New Wave': ['Rebellion & Freedom','Social Commentary','Love & Relationships'],
+  'Britpop': ['Rebellion & Freedom','Night Life & Vibes','Nostalgia & Memory'],
+  'Madchester': ['Night Life & Vibes','Dance & Movement','Rebellion & Freedom'],
+  'Disco': ['Night Life & Vibes','Dance & Movement','Celebration','Love & Relationships'],
+  'Italo Disco': ['Night Life & Vibes','Dance & Movement','Nostalgia & Memory'],
+  'Cosmic Disco': ['Night Life & Vibes','Dance & Movement','Nature & Place'],
+  'Acid House': ['Night Life & Vibes','Dance & Movement','Rebellion & Freedom'],
+  'Eurodance': ['Night Life & Vibes','Dance & Movement','Celebration'],
+  'Synth Punk': ['Rebellion & Freedom','Dark & Existential','Social Commentary'],
+  'Krautrock': ['Dark & Existential','Psychedelic Rock','Nature & Place'],
+  'Dub': ['Night Life & Vibes','Rebellion & Freedom','Nostalgia & Memory'],
+  'Hip Hop': ['Street & Hustle','Flex & Confidence','Social Commentary','Personal Struggle'],
+  'Rap': ['Street & Hustle','Flex & Confidence','Social Commentary'],
+  'Boom Bap': ['Street & Hustle','Social Commentary','Nostalgia & Memory'],
+  'Trap': ['Street & Hustle','Flex & Confidence','Night Life & Vibes'],
+  'Lo-fi Hip Hop': ['Nostalgia & Memory','Personal Struggle','Love & Relationships'],
+  'R&B': ['Love & Relationships','Night Life & Vibes','Personal Struggle'],
+  'Neo-Soul': ['Love & Relationships','Personal Struggle','Faith & Spirituality'],
+  'Soul': ['Love & Relationships','Personal Struggle','Faith & Spirituality'],
+  'Doo Wop': ['Love & Relationships','Nostalgia & Memory','Celebration'],
+  'Funk': ['Night Life & Vibes','Dance & Movement','Celebration','Love & Relationships'],
+  'Phonk': ['Street & Hustle','Dark & Existential','Night Life & Vibes'],
+  'Rock': ['Rebellion & Freedom','Personal Struggle','Love & Relationships'],
+  'Classic Rock': ['Rebellion & Freedom','Night Life & Vibes','Love & Relationships'],
+  'Indie Rock': ['Personal Struggle','Love & Relationships','Nostalgia & Memory'],
+  'Alternative Rock': ['Personal Struggle','Rebellion & Freedom','Social Commentary'],
+  'Pop Rock': ['Love & Relationships','Celebration','Personal Struggle'],
+  'Hard Rock': ['Rebellion & Freedom','Night Life & Vibes','Flex & Confidence'],
+  'Punk Rock': ['Rebellion & Freedom','Social Commentary','Personal Struggle'],
+  'Post-Punk': ['Dark & Existential','Social Commentary','Personal Struggle'],
+  'Grunge': ['Personal Struggle','Rebellion & Freedom','Dark & Existential'],
+  'Heavy Metal': ['Dark & Existential','Rebellion & Freedom','Loss & Grief'],
+  'Progressive Rock': ['Dark & Existential','Nature & Place','Social Commentary'],
+  'Psychedelic Rock': ['Nature & Place','Dark & Existential','Rebellion & Freedom'],
+  'Shoegaze': ['Love & Relationships','Nostalgia & Memory','Nature & Place'],
+  'Emo': ['Personal Struggle','Loss & Grief','Love & Relationships'],
+  'Nu Metal': ['Personal Struggle','Rebellion & Freedom','Dark & Existential'],
+  'Power Metal': ['Dark & Existential','Rebellion & Freedom','Celebration'],
+  'Pop': ['Love & Relationships','Celebration','Flex & Confidence'],
+  'Synth Pop': ['Love & Relationships','Night Life & Vibes','Nostalgia & Memory'],
+  'Electropop': ['Night Life & Vibes','Love & Relationships','Rebellion & Freedom'],
+  'Indie Pop': ['Love & Relationships','Nostalgia & Memory','Personal Struggle'],
+  'Dream Pop': ['Love & Relationships','Nostalgia & Memory','Nature & Place'],
+  'Art Pop': ['Dark & Existential','Social Commentary','Personal Struggle'],
+  'Dance Pop': ['Night Life & Vibes','Dance & Movement','Love & Relationships','Celebration'],
+  'K-Pop': ['Love & Relationships','Flex & Confidence','Celebration'],
+  'J-Pop': ['Love & Relationships','Celebration','Nostalgia & Memory'],
+  'City Pop': ['Nostalgia & Memory','Night Life & Vibes','Love & Relationships'],
+  'Country': ['Nostalgia & Memory','Love & Relationships','Nature & Place','Faith & Spirituality'],
+  'Modern Country': ['Nostalgia & Memory','Love & Relationships','Night Life & Vibes'],
+  'Bluegrass': ['Nostalgia & Memory','Nature & Place','Faith & Spirituality'],
+  'Folk': ['Nostalgia & Memory','Nature & Place','Social Commentary'],
+  'Indie Folk': ['Nostalgia & Memory','Personal Struggle','Nature & Place'],
+  'Americana': ['Nostalgia & Memory','Nature & Place','Social Commentary'],
+  'Singer-Songwriter': ['Personal Struggle','Love & Relationships','Nostalgia & Memory'],
+  'Celtic': ['Nature & Place','Nostalgia & Memory','Loss & Grief'],
+  'Jazz': ['Night Life & Vibes','Love & Relationships','Nostalgia & Memory'],
+  'Smooth Jazz': ['Love & Relationships','Night Life & Vibes','Nature & Place'],
+  'Bebop': ['Night Life & Vibes','Flex & Confidence','Rebellion & Freedom'],
+  'Jazz Fusion': ['Night Life & Vibes','Nature & Place','Personal Struggle'],
+  'Bossa Nova': ['Love & Relationships','Nature & Place','Night Life & Vibes'],
+  'Swing': ['Night Life & Vibes','Celebration','Love & Relationships'],
+  'Blues': ['Personal Struggle','Love & Relationships','Loss & Grief'],
+  'Delta Blues': ['Personal Struggle','Loss & Grief','Nature & Place'],
+  'Afrobeat': ['Celebration','Night Life & Vibes','Social Commentary'],
+  'Reggae': ['Rebellion & Freedom','Social Commentary','Faith & Spirituality'],
+  'Dancehall': ['Night Life & Vibes','Dance & Movement','Celebration','Love & Relationships'],
+  'Latin': ['Love & Relationships','Night Life & Vibes','Celebration'],
+  'Salsa': ['Love & Relationships','Dance & Movement','Celebration','Night Life & Vibes'],
+  'Reggaeton': ['Night Life & Vibes','Dance & Movement','Love & Relationships','Flex & Confidence'],
+  'Flamenco': ['Love & Relationships','Loss & Grief','Nature & Place'],
+  'World Music': ['Nature & Place','Social Commentary','Faith & Spirituality'],
+  'Classical': ['Nature & Place','Dark & Existential','Loss & Grief'],
+  'Orchestral': ['Dark & Existential','Nature & Place','Celebration'],
+  'Cinematic': ['Dark & Existential','Nature & Place','Loss & Grief'],
+  'Neoclassical': ['Nature & Place','Personal Struggle','Loss & Grief'],
+  'Opera': ['Love & Relationships','Dark & Existential','Loss & Grief'],
+  'Minimalist': ['Nature & Place','Dark & Existential','Personal Struggle']
+};
+const TEMPLATES = [
+  /* ── Electronic & Dance ── */
+  { id:'festival',name:'Festival EDM',icon:'🎧',g1:'EDM',g2:'House',mood:'Euphoric',energy:'High',bpm:128,key:'A minor',instr:['Synth','808s','Hi-hats','Synth Pad'],vocal:'female',style:'' },
+  { id:'deephouse',name:'Deep House',icon:'🌊',g1:'Deep House',g2:'Downtempo',mood:'Dreamy',energy:'Medium',bpm:122,key:'F minor',instr:['Synth Pad','Synth Bass','Hi-hats','Electric Piano'],vocal:'female',style:'Whisper' },
+  { id:'trance',name:'Trance',icon:'🌀',g1:'Trance',g2:'EDM',mood:'Euphoric',energy:'Building',bpm:138,key:'A minor',instr:['Synth','Synth Pad','Electronic Drums','Strings'],vocal:'female',style:'Belting' },
+  { id:'dnb',name:'Drum & Bass',icon:'⚙️',g1:'Drum and Bass',g2:'',mood:'Intense',energy:'Frantic',bpm:174,key:'E minor',instr:['Synth Bass','Electronic Drums','Hi-hats','Synth'],vocal:'',style:'' },
+  { id:'hardstyle',name:'Hardstyle',icon:'💥',g1:'Hardstyle',g2:'EDM',mood:'Aggressive',energy:'Explosive',bpm:150,key:'D minor',instr:['Synth','808s','Electronic Drums'],vocal:'female',style:'' },
+  { id:'synthwave',name:'Synthwave',icon:'🌆',g1:'Synthwave',g2:'Electropop',mood:'Nostalgic',energy:'Driving',bpm:118,key:'A minor',instr:['Analog Synth','Synth Bass','Electronic Drums','Synth Pad'],vocal:'male',style:'' },
+  { id:'ambient',name:'Ambient',icon:'🫧',g1:'Ambient',g2:'Downtempo',mood:'Peaceful',energy:'Low',bpm:70,key:'C major',instr:['Synth Pad','Piano','Strings','Harp'],vocal:'',style:'' },
+  /* ── Hip-Hop & R&B ── */
+  { id:'trap',name:'Trap Banger',icon:'🔥',g1:'Trap',g2:'Hip Hop',mood:'Aggressive',energy:'Driving',bpm:140,key:'D minor',instr:['808s','Hi-hats','Synth Bass','Synth'],vocal:'male',style:'Autotuned delivery' },
+  { id:'anthemictrap',name:'Anthemic Trap',icon:'🏛️',g1:'Trap',g2:'EDM',mood:'Triumphant',energy:'Building',bpm:140,key:'C minor',instr:['808s','Synth Pad','Synth','Melodic Synth','Strings'],vocal:'',style:'' },
+  { id:'boombap',name:'Boom Bap',icon:'📼',g1:'Boom Bap',g2:'Hip Hop',mood:'Nostalgic',energy:'Medium',bpm:92,key:'C minor',instr:['Drums','Bass Guitar','Piano','Saxophone'],vocal:'male',style:'Rap' },
+  { id:'phonk',name:'Phonk',icon:'👾',g1:'Phonk',g2:'Trap',mood:'Dark',energy:'Driving',bpm:130,key:'C# minor',instr:['808s','Hi-hats','Synth','Piano'],vocal:'male',style:'Rap' },
+  { id:'rnb',name:'R&B Slow Jam',icon:'💜',g1:'R&B',g2:'Neo-Soul',mood:'Romantic',energy:'Chill',bpm:68,key:'Ab major',instr:['Electric Piano','Bass Guitar','Drums','Strings'],vocal:'female',style:'Falsetto' },
+  { id:'lofi',name:'Lo-fi Chill',icon:'🌙',g1:'Lo-fi Hip Hop',g2:'',mood:'Dreamy',energy:'Chill',bpm:75,key:'Eb major',instr:['Piano','Synth Pad','Drums'],vocal:'',style:'' },
+  { id:'neosoul',name:'Neo Soul',icon:'🪷',g1:'Neo-Soul',g2:'Funk',mood:'Peaceful',energy:'Chill',bpm:82,key:'Eb major',instr:['Electric Piano','Bass Guitar','Drums','Organ'],vocal:'female',style:'Crooning' },
+  /* ── Rock & Alternative ── */
+  { id:'poppunk',name:'Pop Punk',icon:'⚡',g1:'Punk Rock',g2:'Pop Rock',mood:'Intense',energy:'High',bpm:168,key:'E minor',instr:['Distorted Guitar','Bass Guitar','Drums'],vocal:'male',style:'Raspy lead vocal' },
+  { id:'metal',name:'Metal Anthem',icon:'🤘',g1:'Heavy Metal',g2:'Hard Rock',mood:'Aggressive',energy:'Explosive',bpm:155,key:'B minor',instr:['Distorted Guitar','Bass Guitar','Drums'],vocal:'male',style:'Growl' },
+  { id:'grunge',name:'Grunge',icon:'🧨',g1:'Grunge',g2:'Alternative Rock',mood:'Anxious',energy:'Driving',bpm:126,key:'E minor',instr:['Distorted Guitar','Bass Guitar','Drums'],vocal:'male',style:'Raspy lead vocal' },
+  { id:'indierock',name:'Indie Rock',icon:'🎸',g1:'Indie Rock',g2:'Alternative Rock',mood:'Bittersweet',energy:'Medium',bpm:130,key:'G major',instr:['Electric Guitar','Bass Guitar','Drums','Synth'],vocal:'male',style:'' },
+  { id:'shoegaze',name:'Shoegaze',icon:'👟',g1:'Shoegaze',g2:'Dream Pop',mood:'Dreamy',energy:'Medium',bpm:110,key:'D major',instr:['Electric Guitar','Synth Pad','Bass Guitar','Drums'],vocal:'female',style:'Whisper' },
+  { id:'progrock',name:'Prog Rock',icon:'🪐',g1:'Progressive Rock',g2:'',mood:'Mysterious',energy:'Building',bpm:108,key:'F# minor',instr:['Electric Guitar','Synth','Bass Guitar','Drums','Piano'],vocal:'male',style:'' },
+  { id:'psychedelic',name:'Psychedelic',icon:'🍄',g1:'Psychedelic Rock',g2:'',mood:'Dreamy',energy:'Medium',bpm:115,key:'A major',instr:['Electric Guitar','Synth','Organ','Drums','Sitar'],vocal:'male',style:'' },
+  /* ── Pop & Mainstream ── */
+  { id:'radio',name:'Radio Pop',icon:'📻',g1:'Pop',g2:'Dance Pop',mood:'Joyful',energy:'High',bpm:118,key:'G major',instr:['Piano','Synth','Drums','Strings'],vocal:'female',style:'' },
+  { id:'ballad',name:'Ballad',icon:'💔',g1:'Pop',g2:'',mood:'Melancholic',energy:'Low',bpm:72,key:'C minor',instr:['Piano','Strings','Cello'],vocal:'female',style:'Belting' },
+  { id:'kpop',name:'K-Pop',icon:'💗',g1:'K-Pop',g2:'Dance Pop',mood:'Joyful',energy:'High',bpm:125,key:'A minor',instr:['Synth','Electronic Drums','Synth Bass','Strings'],vocal:'female',style:'' },
+  { id:'citypop',name:'City Pop',icon:'🏙️',g1:'City Pop',g2:'Synth Pop',mood:'Nostalgic',energy:'Medium',bpm:108,key:'D major',instr:['Electric Piano','Synth','Bass Guitar','Drums','Saxophone'],vocal:'female',style:'' },
+  { id:'disco',name:'Disco Funk',icon:'🪩',g1:'Funk',g2:'Dance Pop',mood:'Joyful',energy:'High',bpm:118,key:'Bb major',instr:['Bass Guitar','Electric Guitar','Drums','Brass Section','Strings'],vocal:'female',style:'' },
+  { id:'artpop',name:'Art Pop',icon:'🎭',g1:'Art Pop',g2:'Electropop',mood:'Mysterious',energy:'Medium',bpm:100,key:'F minor',instr:['Synth','Piano','Strings','Electronic Drums'],vocal:'female',style:'' },
+  /* ── Classic Vintage ── */
+  { id:'ewf',name:'Earth Wind & Fire',icon:'🌎',g1:'Funk',g2:'Soul',mood:'Joyful',energy:'High',bpm:108,key:'Bb major',instr:['Brass Section','Electric Piano','Bass Guitar','Drums','Congas','Strings'],vocal:'male',style:'Soulful delivery' },
+  { id:'micheljackson',name:'Michael Jackson Vibes',icon:'🕺',g1:'Funk',g2:'Pop',mood:'Joyful',energy:'High',bpm:120,key:'F minor',instr:['808s','Synth','Drums','Bass Guitar','Strings'],vocal:'male',style:'Whispered vocals' },
+  { id:'doowop',name:'Doo Wop',icon:'🎙️',g1:'Doo Wop',g2:'Soul',mood:'Romantic',energy:'Medium',bpm:92,key:'F major',instr:['Vocal Harmonies','Piano','Bass Guitar','Drums'],vocal:'male',style:'Vocal harmony groups' },
+  { id:'glam',name:'Glam Rock',icon:'⭐',g1:'Glam Rock',g2:'Rock',mood:'Joyful',energy:'High',bpm:120,key:'D major',instr:['Electric Guitar','Bass Guitar','Drums','Synth','Strings'],vocal:'male',style:'Theatrical delivery' },
+  { id:'hairmetal',name:'80s Hair Metal',icon:'🎸',g1:'Hair Metal',g2:'Hard Rock',mood:'Intense',energy:'High',bpm:130,key:'A minor',instr:['Distorted Guitar','Bass Guitar','Drums','Synth'],vocal:'male',style:'Belting' },
+  { id:'britpop',name:'Britpop',icon:'🇬🇧',g1:'Britpop',g2:'Rock',mood:'Joyful',energy:'Driving',bpm:120,key:'G major',instr:['Electric Guitar','Bass Guitar','Drums','Synth'],vocal:'male',style:'Swagger' },
+  { id:'acidhouse',name:'Acid House',icon:'🔧',g1:'Acid House',g2:'Techno',mood:'Euphoric',energy:'High',bpm:128,key:'A minor',instr:['Acid Synth','Electronic Drums','Synth Bass','Hi-hats'],vocal:'',style:'' },
+  { id:'eurodance',name:'Eurodance',icon:'💿',g1:'Eurodance',g2:'Synth Pop',mood:'Euphoric',energy:'High',bpm:130,key:'G minor',instr:['Synth','Synth Pad','Electronic Drums','Hi-hats','Synth Bass'],vocal:'female',style:'Powerful delivery' },
+  /* ── Country & Folk ── */
+  { id:'country',name:'Country Rock',icon:'🤠',g1:'Country',g2:'Rock',mood:'Nostalgic',energy:'Medium',bpm:108,key:'G major',instr:['Acoustic Guitar','Banjo','Drums','Harmonica'],vocal:'male',style:'' },
+  { id:'indiefolk',name:'Indie Folk',icon:'🍂',g1:'Indie Folk',g2:'Singer-Songwriter',mood:'Bittersweet',energy:'Low',bpm:96,key:'C major',instr:['Acoustic Guitar','Violin','Mandolin','Drums'],vocal:'male',style:'' },
+  { id:'bluegrass',name:'Bluegrass',icon:'🪕',g1:'Bluegrass',g2:'Americana',mood:'Joyful',energy:'High',bpm:145,key:'G major',instr:['Banjo','Fiddle','Acoustic Guitar','Bass Guitar','Mandolin'],vocal:'male',style:'' },
+  { id:'celtic',name:'Celtic',icon:'☘️',g1:'Celtic',g2:'Folk',mood:'Triumphant',energy:'Building',bpm:130,key:'D minor',instr:['Fiddle','Flute','Acoustic Guitar','Drums','Harp'],vocal:'',style:'' },
+  /* ── Jazz & Blues ── */
+  { id:'jazz',name:'Smooth Jazz',icon:'🎷',g1:'Smooth Jazz',g2:'Soul',mood:'Romantic',energy:'Chill',bpm:86,key:'Eb major',instr:['Saxophone','Piano','Bass Guitar','Drums'],vocal:'female',style:'Crooning' },
+  { id:'blues',name:'Delta Blues',icon:'🎸',g1:'Delta Blues',g2:'Blues',mood:'Melancholic',energy:'Low',bpm:76,key:'E minor',instr:['Slide Guitar','Acoustic Guitar','Harmonica','Drums'],vocal:'male',style:'Raspy lead vocal' },
+  { id:'bossanova',name:'Bossa Nova',icon:'🌴',g1:'Bossa Nova',g2:'Jazz',mood:'Romantic',energy:'Chill',bpm:72,key:'D major',instr:['Acoustic Guitar','Piano','Bass Guitar','Drums','Flute'],vocal:'female',style:'Crooning' },
+  { id:'swing',name:'Swing',icon:'🎺',g1:'Swing',g2:'Jazz',mood:'Joyful',energy:'High',bpm:160,key:'Bb major',instr:['Trumpet','Saxophone','Piano','Bass Guitar','Drums'],vocal:'male',style:'' },
+  /* ── World & Latin ── */
+  { id:'reggaeton',name:'Reggaeton',icon:'🌶️',g1:'Reggaeton',g2:'Latin',mood:'Intense',energy:'High',bpm:92,key:'A minor',instr:['808s','Hi-hats','Synth','Drums'],vocal:'male',style:'' },
+  { id:'afrobeat',name:'Afrobeat',icon:'🥁',g1:'Afrobeat',g2:'Dancehall',mood:'Joyful',energy:'High',bpm:108,key:'G minor',instr:['Drums','Bass Guitar','Brass Section','Congas','Electric Guitar'],vocal:'male',style:'' },
+  { id:'reggae',name:'Reggae',icon:'🟢',g1:'Reggae',g2:'',mood:'Peaceful',energy:'Chill',bpm:80,key:'Bb major',instr:['Electric Guitar','Bass Guitar','Drums','Organ'],vocal:'male',style:'' },
+  { id:'flamenco',name:'Flamenco',icon:'💃',g1:'Flamenco',g2:'World Music',mood:'Intense',energy:'Building',bpm:120,key:'A minor',instr:['Acoustic Guitar','Drums','Bass Guitar'],vocal:'male',style:'Belting' },
+  { id:'dancehall',name:'Dancehall',icon:'🔊',g1:'Dancehall',g2:'Reggae',mood:'Joyful',energy:'High',bpm:100,key:'G minor',instr:['808s','Drums','Synth','Brass Section'],vocal:'male',style:'' },
+  /* ── Classical & Cinematic ── */
+  { id:'cinematic',name:'Cinematic',icon:'🎬',g1:'Cinematic',g2:'Orchestral',mood:'Epic',energy:'Building',bpm:90,key:'E minor',instr:['Orchestra','Strings','Taiko Drums','Choir Vocals'],vocal:'',style:'' },
+  { id:'spa',name:'Spa/Asian Ambient',icon:'🧘',g1:'Ambient',g2:'Neoclassical',mood:'Peaceful',energy:'Low',bpm:60,key:'C major',instr:['Piano','Strings','Asian Flute','Harp','Synth Pad'],vocal:'',style:'' },
+  { id:'opera',name:'Opera',icon:'🏛️',g1:'Opera',g2:'Classical',mood:'Intense',energy:'Building',bpm:80,key:'D minor',instr:['Orchestra','Strings','Piano','Harp'],vocal:'female',style:'Operatic' },
+  { id:'minimalist',name:'Minimalist',icon:'⬜',g1:'Minimalist',g2:'Neoclassical',mood:'Peaceful',energy:'Low',bpm:66,key:'C major',instr:['Piano','Strings','Cello'],vocal:'',style:'' },
+  /* ── Gospel & Spiritual ── */
+  { id:'gospel',name:'Gospel',icon:'🙏',g1:'Soul',g2:'R&B',mood:'Uplifting',energy:'Building',bpm:98,key:'Bb major',instr:['Organ','Piano','Drums','Choir Vocals'],vocal:'',style:'' },
+  /* ── Emo & Subculture ── */
+  { id:'emo',name:'Emo',icon:'🖤',g1:'Emo',g2:'Alternative Rock',mood:'Melancholic',energy:'Driving',bpm:145,key:'C minor',instr:['Distorted Guitar','Bass Guitar','Drums','Piano'],vocal:'male',style:'Raspy lead vocal' },
+  { id:'numetal',name:'Nu Metal',icon:'⛓️',g1:'Nu Metal',g2:'Rap',mood:'Aggressive',energy:'Explosive',bpm:135,key:'D minor',instr:['Distorted Guitar','Bass Guitar','Drums','808s'],vocal:'male',style:'Growl' },
+  { id:'crunkcore',name:'Crunkcore',icon:'🤪',g1:'Electropop',g2:'Hip Hop',mood:'Joyful',energy:'Frantic',bpm:150,key:'E minor',instr:['Synth','808s','Electronic Drums','Distorted Guitar'],vocal:'duet',style:'Screaming' },
+  { id:'emorap',name:'Emo Rap',icon:'😔',g1:'Emo',g2:'Trap',mood:'Melancholic',energy:'Medium',bpm:138,key:'C minor',instr:['808s','Hi-hats','Acoustic Guitar','Piano'],vocal:'male',style:'Autotuned delivery' },
+  { id:'skramz',name:'Skramz',icon:'📢',g1:'Emo',g2:'Punk Rock',mood:'Anxious',energy:'Explosive',bpm:180,key:'D minor',instr:['Distorted Guitar','Bass Guitar','Drums'],vocal:'male',style:'Screaming' },
+  /* ── Underground Rap & Bass ── */
+  { id:'ragetrap',name:'Rage Trap',icon:'😈',g1:'Trap',g2:'EDM',mood:'Aggressive',energy:'Explosive',bpm:150,key:'F minor',instr:['808s','Synth','Hi-hats','Electronic Drums'],vocal:'male',style:'Autotuned delivery' },
+  { id:'drill',name:'UK Drill',icon:'🔪',g1:'Hip Hop',g2:'Trap',mood:'Dark',energy:'Driving',bpm:140,key:'C# minor',instr:['808s','Hi-hats','Synth','Piano'],vocal:'male',style:'Rap' },
+  { id:'nydrill',name:'NY Drill',icon:'🗽',g1:'Hip Hop',g2:'Trap',mood:'Aggressive',energy:'Driving',bpm:140,key:'G minor',instr:['808s','Hi-hats','Synth Bass','Piano'],vocal:'male',style:'Rap' },
+  { id:'cloudrap',name:'Cloud Rap',icon:'☁️',g1:'Hip Hop',g2:'Ambient',mood:'Dreamy',energy:'Chill',bpm:66,key:'Ab major',instr:['Synth Pad','808s','Hi-hats','Piano'],vocal:'male',style:'Autotuned delivery' },
+  { id:'memphis',name:'Memphis Rap',icon:'💀',g1:'Hip Hop',g2:'Phonk',mood:'Dark',energy:'Driving',bpm:132,key:'D minor',instr:['808s','Hi-hats','Piano','Organ'],vocal:'male',style:'Rap' },
+  { id:'jerseyclub',name:'Jersey Club',icon:'🏀',g1:'EDM',g2:'Hip Hop',mood:'Joyful',energy:'Frantic',bpm:140,key:'Bb major',instr:['Electronic Drums','808s','Synth','Hi-hats'],vocal:'female',style:'' },
+  { id:'grime',name:'Grime',icon:'🇬🇧',g1:'Hip Hop',g2:'EDM',mood:'Aggressive',energy:'Driving',bpm:140,key:'D minor',instr:['Synth Bass','Electronic Drums','Synth','Hi-hats'],vocal:'male',style:'Rap' },
+  /* ── Hyperpop & Internet ── */
+  { id:'hyperpop',name:'Hyperpop',icon:'💊',g1:'Electropop',g2:'EDM',mood:'Euphoric',energy:'Frantic',bpm:160,key:'E minor',instr:['Synth','808s','Electronic Drums','Distorted Guitar'],vocal:'female',style:'Autotuned delivery' },
+  { id:'witchhouse',name:'Witch House',icon:'🕯️',g1:'Industrial',g2:'Ambient',mood:'Haunting',energy:'Low',bpm:80,key:'C# minor',instr:['Synth Pad','Electronic Drums','Synth Bass','808s'],vocal:'female',style:'Whisper' },
+  { id:'vaporwave',name:'Vaporwave',icon:'🏛️',g1:'Downtempo',g2:'Synth Pop',mood:'Nostalgic',energy:'Chill',bpm:90,key:'Eb major',instr:['Synth Pad','Electric Piano','Synth Bass','Drums'],vocal:'',style:'' },
+  { id:'nightcore',name:'Nightcore',icon:'⚡',g1:'Trance',g2:'Dance Pop',mood:'Euphoric',energy:'High',bpm:170,key:'A minor',instr:['Synth','Electronic Drums','Synth Pad','Piano'],vocal:'female',style:'' },
+  { id:'chiptune',name:'Chiptune',icon:'👾',g1:'Electropop',g2:'Retrowave',mood:'Playful',energy:'High',bpm:155,key:'C major',instr:['Synth','Electronic Drums','Synth Bass'],vocal:'',style:'' },
+  { id:'deconstructed',name:'Decon Club',icon:'🔮',g1:'Industrial',g2:'EDM',mood:'Mysterious',energy:'Frantic',bpm:145,key:'F minor',instr:['Synth','Electronic Drums','808s','Synth Bass'],vocal:'',style:'' },
+  /* ── Extreme & Heavy ── */
+  { id:'blackmetal',name:'Black Metal',icon:'⚰️',g1:'Heavy Metal',g2:'',mood:'Haunting',energy:'Explosive',bpm:180,key:'E minor',instr:['Distorted Guitar','Bass Guitar','Drums'],vocal:'male',style:'Screaming' },
+  { id:'doommetal',name:'Doom Metal',icon:'🪦',g1:'Heavy Metal',g2:'',mood:'Dark',energy:'Low',bpm:60,key:'C minor',instr:['Distorted Guitar','Bass Guitar','Drums','Organ'],vocal:'male',style:'Growl' },
+  { id:'powermetal',name:'Power Metal',icon:'⚔️',g1:'Power Metal',g2:'Heavy Metal',mood:'Triumphant',energy:'High',bpm:160,key:'E minor',instr:['Distorted Guitar','Bass Guitar','Drums','Strings','Choir Vocals'],vocal:'male',style:'Operatic' },
+  { id:'metalcore',name:'Metalcore',icon:'💢',g1:'Heavy Metal',g2:'Punk Rock',mood:'Intense',energy:'Explosive',bpm:155,key:'D minor',instr:['Distorted Guitar','Bass Guitar','Drums','Synth'],vocal:'male',style:'Screaming' },
+  /* ── Experimental & Avant ── */
+  { id:'breakcore',name:'Breakcore',icon:'🧠',g1:'Drum and Bass',g2:'Industrial',mood:'Anxious',energy:'Frantic',bpm:180,key:'F# minor',instr:['Electronic Drums','Synth Bass','Synth','808s'],vocal:'',style:'' },
+  { id:'mathrock',name:'Math Rock',icon:'📐',g1:'Progressive Rock',g2:'Indie Rock',mood:'Playful',energy:'Driving',bpm:140,key:'E minor',instr:['Electric Guitar','Bass Guitar','Drums'],vocal:'male',style:'' },
+  { id:'industrial',name:'Industrial',icon:'🏭',g1:'Industrial',g2:'Techno',mood:'Dark',energy:'Driving',bpm:130,key:'D minor',instr:['Synth','Electronic Drums','Synth Bass','Distorted Guitar'],vocal:'male',style:'Growl' },
+  { id:'gabber',name:'Gabber',icon:'💣',g1:'Hardstyle',g2:'EDM',mood:'Aggressive',energy:'Frantic',bpm:190,key:'A minor',instr:['Electronic Drums','Synth Bass','Synth','808s'],vocal:'',style:'' },
+  { id:'postpunk',name:'Post-Punk',icon:'🖼️',g1:'Post-Punk',g2:'',mood:'Haunting',energy:'Medium',bpm:125,key:'D minor',instr:['Bass Guitar','Electric Guitar','Drums','Synth'],vocal:'male',style:'' },
+  /* ── Latin Underground & Global Bass ── */
+  { id:'dembow',name:'Dembow',icon:'🔈',g1:'Reggaeton',g2:'Dancehall',mood:'Intense',energy:'High',bpm:118,key:'G minor',instr:['808s','Hi-hats','Synth','Drums'],vocal:'male',style:'Rap' },
+  { id:'cumbia',name:'Cumbia',icon:'🪗',g1:'Latin',g2:'World Music',mood:'Joyful',energy:'Medium',bpm:95,key:'C major',instr:['Accordion','Drums','Bass Guitar','Congas'],vocal:'male',style:'' },
+  { id:'baile',name:'Baile Funk',icon:'🍑',g1:'EDM',g2:'Hip Hop',mood:'Intense',energy:'High',bpm:130,key:'A minor',instr:['808s','Electronic Drums','Synth','Hi-hats'],vocal:'male',style:'Rap' },
+  { id:'skapunk',name:'Ska Punk',icon:'🏁',g1:'Punk Rock',g2:'Reggae',mood:'Joyful',energy:'High',bpm:165,key:'Bb major',instr:['Distorted Guitar','Bass Guitar','Drums','Trumpet','Brass Section'],vocal:'male',style:'' },
+  /* ── Worldwide Dance & Movement ── */
+  { id:'footwork',name:'Chicago Footwork',icon:'👟',g1:'Footwork',g2:'Hip Hop',mood:'Playful',energy:'Frantic',bpm:160,key:'F minor',instr:['Synth','808s','Synth Bass','Electronic Drums'],vocal:'male',style:'Rap' },
+  { id:'miamibass',name:'Miami Bass',icon:'🎤',g1:'Miami Bass',g2:'Hip Hop',mood:'Intense',energy:'High',bpm:110,key:'A minor',instr:['808s','Synth','Bass Guitar','Hi-hats'],vocal:'male',style:'Rap' },
+  { id:'detroitjit',name:'Detroit Jit',icon:'⚙️',g1:'Jit',g2:'Hip Hop',mood:'Intense',energy:'Frantic',bpm:150,key:'D minor',instr:['808s','Electronic Drums','Synth','Hi-hats'],vocal:'male',style:'Rap' },
+  { id:'technobass',name:'UK Bass',icon:'📍',g1:'Bass Music',g2:'Techno',mood:'Intense',energy:'Driving',bpm:140,key:'G minor',instr:['Bass','Synth Bass','Electronic Drums','Hi-hats'],vocal:'',style:'' },
+  { id:'dubstep',name:'Dubstep',icon:'🔊',g1:'Dubstep',g2:'Bass Music',mood:'Aggressive',energy:'Explosive',bpm:140,key:'F# minor',instr:['Bass Synth','Wobble Bass','Electronic Drums','808s'],vocal:'',style:'' },
+  { id:'gqom',name:'Gqom',icon:'🇿🇦',g1:'Gqom',g2:'House',mood:'Intense',energy:'Driving',bpm:120,key:'C minor',instr:['Synth Bass','Drums','Synth','Hi-hats'],vocal:'male',style:'Rap' },
+  { id:'amapiano',name:'Amapiano',icon:'🎹',g1:'Amapiano',g2:'House',mood:'Joyful',energy:'Medium',bpm:110,key:'D major',instr:['Electric Piano','Bass Guitar','Drums','Synth'],vocal:'female',style:'' },
+  { id:'kuduro',name:'Kuduro',icon:'🇦🇴',g1:'Kuduro',g2:'EDM',mood:'Intense',energy:'High',bpm:138,key:'F# minor',instr:['808s','Electronic Drums','Hi-hats','Synth'],vocal:'male',style:'Rap' },
+  { id:'dancehall_electric',name:'Dancehall Riddim',icon:'⚡',g1:'Dancehall',g2:'Reggae',mood:'Intense',energy:'High',bpm:92,key:'G minor',instr:['808s','Drums','Synth','Bass Guitar'],vocal:'male',style:'Rap' },
+  { id:'mueve',name:'Mueve (Reggaeton Speed)',icon:'🔥',g1:'Reggaeton',g2:'Trap',mood:'Intense',energy:'High',bpm:130,key:'C# minor',instr:['808s','Hi-hats','Synth','Drums'],vocal:'male',style:'Rap' },
+  { id:'perreo',name:'Perreo',icon:'💃',g1:'Reggaeton',g2:'Dancehall',mood:'Intense',energy:'High',bpm:92,key:'A minor',instr:['808s','Drums','Synth','Bass Guitar'],vocal:'male',style:'' },
+  { id:'bongo',name:'Bongo Flava',icon:'🌍',g1:'Bongo Flava',g2:'Afrobeat',mood:'Joyful',energy:'High',bpm:116,key:'G minor',instr:['Drums','Synth','Bass Guitar','Congas'],vocal:'male',style:'Rap' },
+  { id:'azonto',name:'Azonto',icon:'🇬🇭',g1:'Azonto',g2:'Afrobeat',mood:'Joyful',energy:'High',bpm:128,key:'F major',instr:['Drums','Brass Section','Bass Guitar','Congas'],vocal:'male',style:'' },
+  { id:'kwaito',name:'Kwaito',icon:'🎧',g1:'Kwaito',g2:'House',mood:'Chill',energy:'Medium',bpm:120,key:'Bb major',instr:['Synth','808s','Drums','Synth Bass'],vocal:'male',style:'Rap' },
+  { id:'scouse',name:'Scouse House',icon:'🏘️',g1:'House',g2:'UK Bass',mood:'Joyful',energy:'High',bpm:130,key:'D major',instr:['Synth','Synth Bass','Drums','Brass Section'],vocal:'female',style:'' },
+  { id:'balti',name:'Balti (UK Asian)',icon:'🌶️',g1:'UK Garage',g2:'House',mood:'Joyful',energy:'High',bpm:120,key:'G minor',instr:['Synth','Drums','Bass Guitar','Sitar'],vocal:'male',style:'' },
+  { id:'dancehall_afroswing',name:'Afroswing',icon:'🌴',g1:'Afrobeats',g2:'Hip Hop',mood:'Joyful',energy:'Driving',bpm:96,key:'F major',instr:['Drums','Brass Section','Bass Guitar','Synth'],vocal:'male',style:'Rap' },
+  { id:'bushfire',name:'Bushfire (AUS Electronic)',icon:'🔥',g1:'House',g2:'Techno',mood:'Intense',energy:'Driving',bpm:130,key:'A minor',instr:['Synth','Synth Bass','Electronic Drums','Hi-hats'],vocal:'',style:'' },
+  { id:'dark_garage',name:'Dark Garage',icon:'🌑',g1:'UK Garage',g2:'Dubstep',mood:'Dark',energy:'Driving',bpm:140,key:'F# minor',instr:['Bass Synth','Electronic Drums','Hi-hats','Synth'],vocal:'',style:'' },
+  { id:'hardtekno',name:'Hard Tekno',icon:'💥',g1:'Hardstyle',g2:'Techno',mood:'Aggressive',energy:'Explosive',bpm:150,key:'D minor',instr:['Synth','808s','Electronic Drums','Bass Synth'],vocal:'',style:'' }
+];
+const TAG_REFERENCE = {
+  'Structure': ['[Intro]','[Verse]','[Pre-Chorus]','[Chorus]','[Post-Chorus]','[Bridge]','[Outro]','[Hook]','[Build]','[Drop]','[Breakdown]','[Break]','[Instrumental]','[Solo]','[Interlude]','[Final Chorus]','[Chorus x2]','[Fade Out]','[Beat switch]','[Hook Loop]'],
+  'Vocal Style': ['[Whisper]','[Spoken word]','[Rap]','[Chant vocals]','[Harmonies]','[Falsetto]','[Belting]','[Growl]','[Crooning]','[Operatic]','[Screaming]','[Anthemic chorus]','[Autotuned delivery]','[Raspy lead vocal]'],
+  'Vocal Emotion': ['[Crying voice]','[Angry tone]','[Mocking laughter]','[Vulnerable]','[Defiant]','[Sultry]','[Joyful]','[Melancholic]','[Intimate]'],
+  'Vocal Effects': ['[Reverb]','[Delay]','[AutoTune]','[Distorted Vocals]','[Vocoder]','[Telephone Effect]','[Tape-Saturated]','[Harmonized chorus]'],
+  'Atmosphere': ['[Birds chirping]','[Rain]','[Thunder]','[Ocean waves]','[City ambience]','[Fire crackling]','[Applause]','[Cheering]','[Crowd noise]','[Stadium ambience]','[Record scratch]','[Static]','[Silence]'],
+  'Production': ['[Lo-fi]','[Gritty]','[Clean]','[Raw]','[Lush]','[Sparse]','[Atmospheric]','[Punchy]','[Wide stereo]','[Effect: Sidechain]','[Effect: Bitcrusher]','[Riser build]','[Bass drop]'],
+  'Dynamics': ['[Soft verse | low vocal intensity]','[Power chorus | full band]','[Half-time breakdown]','[Gang shouts on last line]','[Palm-muted guitars]','[Pedal steel guitar]']
+};
+const GENRE_ARTISTS = {
+  /* ── Electronic & Dance ── */
+  'EDM': ['Calvin Harris','Martin Garrix','Marshmello','Skrillex','Zedd','David Guetta'],
+  'House': ['Disclosure','Fisher','Chris Lake','Dom Dolla','MK'],
+  'Deep House': ['Kaytranada','Peggy Gou','Lane 8','Disclosure','Nora En Pure'],
+  'Tech House': ['Fisher','Chris Lake','Dom Dolla','James Hype','John Summit'],
+  'Techno': ['Charlotte de Witte','Amelie Lens','Adam Beyer','Nina Kraviz','Richie Hawtin'],
+  'Trance': ['Armin van Buuren','Above & Beyond','Paul van Dyk','Gareth Emery','Andrew Rayel'],
+  'Dubstep': ['Skrillex','Excision','Zeds Dead','Virtual Riot','Subtronics'],
+  'Drum and Bass': ['Chase & Status','Sub Focus','Netsky','Pendulum','Andy C','Shy FX'],
+  'Ambient': ['Brian Eno','Tycho','Boards of Canada','Aphex Twin'],
+  'Synthwave': ['The Midnight','Kavinsky','Gunship','Perturbator','FM-84','Carpenter Brut'],
+  'Retrowave': ['The Midnight','Kavinsky','FM-84','Timecop1983'],
+  'Chillwave': ['Washed Out','Toro y Moi','Neon Indian','Com Truise'],
+  'Future Bass': ['Flume','San Holo','Louis The Child','Illenium','Porter Robinson'],
+  'Electro': ['Justice','Boys Noize','Mr. Oizo','SebastiAn','Gesaffelstein'],
+  'Industrial': ['Nine Inch Nails','Ministry','Rammstein','KMFDM','Skinny Puppy'],
+  'Downtempo': ['Bonobo','Tycho','Massive Attack','Thievery Corporation'],
+  'Hardstyle': ['Headhunterz','Brennan Heart','Da Tweekaz','Sub Zero Project'],
+  'Disco': ['Donna Summer','Bee Gees','KC and the Sunshine Band','Giorgio Moroder','Nile Rodgers'],
+  'Italo Disco': ['Giorgio Moroder','Claudio Simonetti','Vangelis','Moroder','Farina'],
+  'Cosmic Disco': ['Giorgio Moroder','Vangelis','Yello','Jean-Michel Jarre','Kraftwerk'],
+  'Acid House': ['Phuture','Adonis','Farley & Heller','Josh Wink','DJ Pierre'],
+  'Eurodance': ['Eiffel 65','Gina G','Aqua','Haddaway','Uncle Kracker'],
+  'Synth Punk': ['Devo','The Human League','Soft Kill','Chromatics','Perturbator'],
+  'Krautrock': ['Kraftwerk','Tangerine Dream','Neu!','Faust','Can'],
+  'Dub': ['King Tubby','Lee Perry','Peter Tosh','Scientist','Prince Jammy'],
+  /* ── Hip-Hop & R&B ── */
+  'Hip Hop': ['Kendrick Lamar','J. Cole','Drake','Tyler The Creator','JID','Denzel Curry'],
+  'Rap': ['Kendrick Lamar','Eminem','Lil Wayne','Jay-Z','Nicki Minaj','Megan Thee Stallion'],
+  'Boom Bap': ['Nas','MF DOOM','Joey Bada$$','Wu-Tang Clan','Benny The Butcher','Roc Marciano'],
+  'Trap': ['Future','Travis Scott','Young Thug','21 Savage','Gunna','Playboi Carti','Lil Baby'],
+  'Lo-fi Hip Hop': ['Nujabes','J Dilla','Tomppabeats','Idealism','Jinsang'],
+  'R&B': ['SZA','The Weeknd','Frank Ocean','Summer Walker','H.E.R.','Daniel Caesar','Brent Faiyaz'],
+  'Neo-Soul': ['Erykah Badu','D\'Angelo','Anderson .Paak','Lauryn Hill','Steve Lacy'],
+  'Soul': ['Aretha Franklin','Marvin Gaye','Stevie Wonder','Al Green','Leon Bridges'],
+  'Funk': ['Earth Wind & Fire','Parliament','Prince','James Brown','Michael Jackson','Vulfpeck','Thundercat'],
+  'Phonk': ['Freddie Dredd','PlayaPhonk','Kordhell','DVRST','DJ Smokey','Soudiere'],
+  /* ── Rock & Alternative ── */
+  'Rock': ['Foo Fighters','Royal Blood','Queens of the Stone Age','Greta Van Fleet'],
+  'Classic Rock': ['Led Zeppelin','The Rolling Stones','AC/DC','Aerosmith','Deep Purple'],
+  'Indie Rock': ['Arctic Monkeys','The Strokes','Tame Impala','Radiohead','Mac DeMarco'],
+  'Alternative Rock': ['Radiohead','Muse','The Smashing Pumpkins','Pixies','Cage The Elephant'],
+  'Pop Rock': ['Paramore','Fall Out Boy','Imagine Dragons','OneRepublic','Jimmy Eat World'],
+  'Hard Rock': ['AC/DC','Guns N\' Roses','Aerosmith','Van Halen','Wolfmother'],
+  'Punk Rock': ['Blink-182','Green Day','The Ramones','Sum 41','Bad Religion','NOFX'],
+  'Post-Punk': ['Joy Division','Bauhaus','Interpol','Fontaines D.C.','IDLES'],
+  'Grunge': ['Nirvana','Alice in Chains','Soundgarden','Pearl Jam','Stone Temple Pilots'],
+  'Heavy Metal': ['Metallica','Iron Maiden','Black Sabbath','Judas Priest','Pantera','Slayer'],
+  'Progressive Rock': ['Pink Floyd','Tool','Dream Theater','Rush','King Crimson','Porcupine Tree'],
+  'Psychedelic Rock': ['Jimi Hendrix','Pink Floyd','Tame Impala','The Doors','King Gizzard'],
+  'Shoegaze': ['My Bloody Valentine','Slowdive','Cocteau Twins','Ride','Nothing'],
+  'Emo': ['My Chemical Romance','Fall Out Boy','Dashboard Confessional','American Football','Brand New'],
+  'Nu Metal': ['Linkin Park','Korn','Slipknot','Deftones','Limp Bizkit','System of a Down'],
+  'Power Metal': ['DragonForce','Helloween','Blind Guardian','Sabaton','Powerwolf'],
+  'Glam Rock': ['David Bowie','T. Rex','Queen','Mott the Hoople','Slade'],
+  'Hair Metal': ['Mötley Crüe','Def Leppard','Poison','Twisted Sister','Warrant'],
+  'Thrash Metal': ['Metallica','Slayer','Megadeth','Exodus','Kreator'],
+  'New Wave': ['Blondie','Talking Heads','Duran Duran','Depeche Mode','The Cars'],
+  'Britpop': ['Oasis','Blur','Pulp','Suede','The Verve'],
+  'Madchester': ['Happy Mondays','The Stone Roses','New Order','Inspiral Carpets'],
+  /* ── Pop & Mainstream ── */
+  'Pop': ['Taylor Swift','Dua Lipa','Ariana Grande','Billie Eilish','The Weeknd','Olivia Rodrigo'],
+  'Synth Pop': ['Depeche Mode','The 1975','CHVRCHES','Grimes','Pet Shop Boys'],
+  'Electropop': ['Charli XCX','Grimes','Robyn','La Roux','100 gecs','Kim Petras'],
+  'Indie Pop': ['Clairo','beabadoobee','girl in red','Rex Orange County','Wallows'],
+  'Dream Pop': ['Beach House','Cocteau Twins','Mazzy Star','Cigarettes After Sex'],
+  'Art Pop': ['Björk','FKA Twigs','Kate Bush','St. Vincent','Charli XCX'],
+  'Dance Pop': ['Dua Lipa','Lady Gaga','Doja Cat','Carly Rae Jepsen','Tinashe'],
+  'K-Pop': ['BLACKPINK','BTS','Stray Kids','NewJeans','aespa','TWICE'],
+  'J-Pop': ['Hikaru Utada','Kenshi Yonezu','YOASOBI','LiSA','Ado'],
+  'City Pop': ['Tatsuro Yamashita','Mariya Takeuchi','Taeko Onuki','Junko Ohashi'],
+  /* ── Country & Folk ── */
+  'Country': ['Morgan Wallen','Luke Combs','Zach Bryan','Chris Stapleton','Jelly Roll'],
+  'Modern Country': ['Morgan Wallen','Luke Combs','Zach Bryan','Tyler Childers'],
+  'Bluegrass': ['Billy Strings','Alison Krauss','Chris Thile','Nickel Creek','Molly Tuttle'],
+  'Folk': ['Bob Dylan','Joni Mitchell','Nick Drake','Elliott Smith','Iron & Wine'],
+  'Indie Folk': ['Bon Iver','Fleet Foxes','Phoebe Bridgers','Sufjan Stevens','Gregory Alan Isakov'],
+  'Americana': ['Jason Isbell','Tyler Childers','Colter Wall','Sturgill Simpson'],
+  'Singer-Songwriter': ['Phoebe Bridgers','Elliott Smith','Jeff Buckley','Joni Mitchell','Noah Kahan'],
+  'Celtic': ['The Cranberries','Enya','Clannad','Celtic Woman','The Corrs'],
+  /* ── Jazz & Blues ── */
+  'Jazz': ['Miles Davis','John Coltrane','Kamasi Washington','Robert Glasper'],
+  'Smooth Jazz': ['Kenny G','Sade','George Benson','Norah Jones'],
+  'Bebop': ['Charlie Parker','Dizzy Gillespie','Thelonious Monk','Bud Powell'],
+  'Jazz Fusion': ['Herbie Hancock','Snarky Puppy','Pat Metheny','Weather Report'],
+  'Bossa Nova': ['João Gilberto','Antonio Carlos Jobim','Stan Getz','Astrud Gilberto'],
+  'Swing': ['Frank Sinatra','Ella Fitzgerald','Louis Armstrong','Dean Martin','Tony Bennett'],
+  'Blues': ['B.B. King','Muddy Waters','Gary Clark Jr.','Howlin\' Wolf','Stevie Ray Vaughan'],
+  'Delta Blues': ['Robert Johnson','Muddy Waters','Son House','Charley Patton'],
+  'Doo Wop': ['The Platters','Frankie Lymon & The Teenagers','The Drifters','Sha Na Na','The Coasters'],
+  /* ── World & Latin ── */
+  'Afrobeat': ['Burna Boy','Wizkid','Rema','Tems','Fela Kuti','Ayra Starr'],
+  'Reggae': ['Bob Marley','Peter Tosh','Jimmy Cliff','Damian Marley','Chronixx'],
+  'Dancehall': ['Sean Paul','Popcaan','Vybz Kartel','Shenseea','Spice','Alkaline'],
+  'Latin': ['Bad Bunny','Rosalía','J Balvin','Maluma','Rauw Alejandro'],
+  'Salsa': ['Marc Anthony','Celia Cruz','Héctor Lavoe','Willie Colón'],
+  'Reggaeton': ['Bad Bunny','Daddy Yankee','J Balvin','Ozuna','Rauw Alejandro','Karol G'],
+  'Flamenco': ['Rosalía','Paco de Lucía','Camarón de la Isla','Estrella Morente'],
+  'World Music': ['Fela Kuti','Youssou N\'Dour','Ali Farka Touré','Tinariwen'],
+  /* ── Classical & Cinematic ── */
+  'Classical': ['Beethoven','Chopin','Debussy','Rachmaninoff'],
+  'Orchestral': ['Hans Zimmer','John Williams','Howard Shore','Ennio Morricone'],
+  'Cinematic': ['Hans Zimmer','John Williams','Ennio Morricone','Ramin Djawadi','Ludwig Göransson'],
+  'Neoclassical': ['Ólafur Arnalds','Nils Frahm','Max Richter','Ludovico Einaudi'],
+  'Opera': ['Luciano Pavarotti','Andrea Bocelli','Maria Callas','Plácido Domingo'],
+  'Minimalist': ['Philip Glass','Steve Reich','Ólafur Arnalds','Nils Frahm'],
+  'Spa/Ambient': ['Kitaro','Yanni','Enya','Deva Premal','Ananda Shankar','Tan Dun','Toru Takemitsu','Hikaru Utada','Joe Hisaishi','Zhou Xuan'],
+  /* ── Worldwide Dance & Movement ── */
+  'Footwork': ['RP Boo','DJ Rashad','Jlin','DJ Spinn','Traxman'],
+  'Miami Bass': ['2 Live Crew','Uncle Luke','Khia','Lil Jon','Project Pat'],
+  'Jit': ['Veeze','Rio Da Yung OG','Collective Soul','New Boyz'],
+  'Bass Music': ['Skream','Sinden','Loefah','Benga','Joker'],
+  'Gqom': ['Sjava','Black Motion','Moonchild','Trademark','Kabza De Small'],
+  'Amapiano': ['Kabza De Small','DJ Maphorisa','Focalistic','Uncle Waffles','Major Lazer ft Amapiano Artists'],
+  'Kuduro': ['Iedil Diniz','C\'Est La Vie','Jozilton Belo','Zulapa Diniz'],
+  'Bongo Flava': ['Diamond Platnumz','Ali Kiba','Ray C','Alikiba','Tanzanian artists'],
+  'Azonto': ['Azonto Dance Group','Aziz Azion','Reggie Rockstone','Ghana artists'],
+  'Kwaito': ['Trompies','Arthur Mafokate','TKZee','Boom Shaka'],
+  'Scouse House': ['Cream','Sasha & Digweed','Scouse House Collective','Merseyside DJs'],
+  'Balti': ['Punjabi MC','Dhandholia','Apache Indian','UK Asian artists'],
+  'Afroswing': ['Wizkid','Afrobeats Artists','Dance crew innovators','African movement culture'],
+  'Dark Garage': ['Jammer','P Money','Tinchy Stryder','UK Garage veterans'],
+  'Hard Tekno': ['Surgeon','Ancient Methods','Len Faki','Andy Catalogue']
+};
+/* ── Niche/underground artists not covered by main genres ── */
+var NICHE_ARTISTS = {
+  'ragetrap': ['Playboi Carti','Ken Carson','Destroy Lonely','Yeat','Lancey Foux'],
+  'drill': ['Central Cee','Headie One','Digga D','Unknown T','Russ Millions'],
+  'nydrill': ['Pop Smoke','Fivio Foreign','Kay Flock','Ice Spice','Sheff G'],
+  'cloudrap': ['Bladee','Yung Lean','Bones','Lucki','Ecco2k'],
+  'memphis': ['Three 6 Mafia','Tommy Wright III','Project Pat','Lord Infamous'],
+  'jerseyclub': ['DJ Sliink','Cookiee Kawaii','Club Carlito','DJ Jayhood','Uniiqu3'],
+  'grime': ['Skepta','Stormzy','Wiley','JME','Dizzee Rascal','Novelist'],
+  'hyperpop': ['100 gecs','SOPHIE','charli xcx','AG Cook','underscores','Bladee'],
+  'witchhouse': ['Crystal Castles','Salem','oOoOO','Sidewalks and Skeletons','White Ring'],
+  'vaporwave': ['Macintosh Plus','Saint Pepsi','ESPRIT','George Clanton','Blank Banshee'],
+  'nightcore': ['nightcore-style (pitch-shifted euphoria)'],
+  'chiptune': ['Anamanaguchi','Chipzel','Sabrepulse','Disasterpeace'],
+  'deconstructed': ['SOPHIE','Arca','Oneohtrix Point Never','Lotic','Amnesia Scanner'],
+  'blackmetal': ['Mayhem','Burzum','Emperor','Darkthrone','Bathory'],
+  'doommetal': ['Electric Wizard','Sleep','Black Sabbath','Candlemass','Bell Witch'],
+  'metalcore': ['Bring Me The Horizon','Parkway Drive','Architects','Killswitch Engage','Knocked Loose'],
+  'breakcore': ['Venetian Snares','Machine Girl','Igorrr','Sewerslvt','Goreshit'],
+  'mathrock': ['Polyphia','CHON','toe','Covet','Yvette Young','Delta Sleep'],
+  'gabber': ['Angerfist','Rotterdam Terror Corps','Neophyte','The Speed Freak'],
+  'postpunk': ['Joy Division','Bauhaus','Interpol','Fontaines D.C.','IDLES','Preoccupations'],
+  'eurodance': ['Haddaway','Gina G','2 Unlimited','Eiffel 65','Enya','Patrizia Pellegrino','Dr. Alban','Captain Hollywood Project'],
+  'crunkcore': ['BrokeNCYDE','3OH!3','Breathe Carolina','Blood On The Dance Floor','Millionaires'],
+  'emorap': ['Juice WRLD','Lil Peep','XXXTentacion','nothing,nowhere.','Lil Tracy','SuicideboyS'],
+  'skramz': ['Orchid','pg.99','Saetia','Jerome\'s Dream','City of Caterpillar'],
+  'dembow': ['El Alfa','Tokischa','Rochy RD','Chimbala'],
+  'cumbia': ['Selena','Los Ángeles Azules','Celso Piña','La Sonora Dinamita'],
+  'baile': ['MC Kevin o Chris','Anitta','DJ Rennan da Penha','Ludmilla'],
+  'skapunk': ['Sublime','Less Than Jake','Reel Big Fish','The Mighty Mighty Bosstones','Goldfinger'],
+  'rnb': ['SZA','The Weeknd','Frank Ocean','Summer Walker','Brent Faiyaz','Kehlani'],
+  'neosoul': ['Erykah Badu','D\'Angelo','Anderson .Paak','Lauryn Hill','Steve Lacy'],
+  'boombap': ['Nas','MF DOOM','Joey Bada$$','Wu-Tang Clan','Benny The Butcher'],
+  'anthemictrap': ['Gesaffelstein','Boys Noize','Arca','Rustie','Hudson Mohawke','Baauer','Ekali','LIZ','Flume','Shlohmo'],
+  'phonk': ['Freddie Dredd','PlayaPhonk','Kordhell','DVRST','Soudiere'],
+  'lofi': ['Nujabes','J Dilla','Tomppabeats','Idealism','Jinsang'],
+  'ballad': ['Adele','Sam Smith','Lewis Capaldi','Sia','Whitney Houston'],
+  'cinematic': ['Hans Zimmer','John Williams','Ennio Morricone','Ramin Djawadi'],
+  'gospel': ['Kirk Franklin','Mahalia','Tasha Cobbs Leonard','Kanye West (JIK era)','Fred Hammond'],
+  'footwork': ['RP Boo','DJ Rashad','Jlin','DJ Spinn','Traxman'],
+  'miamibass': ['2 Live Crew','Uncle Luke','Khia','Lil Jon'],
+  'detroitjit': ['Veeze','Rio Da Yung OG','New Boyz'],
+  'technobass': ['Skream','Sinden','Loefah','Benga','Joker'],
+  'dubstep': ['Skrillex','Excision','Zeds Dead','Virtual Riot','Subtronics'],
+  'gqom': ['Sjava','Black Motion','Moonchild','Trademark','Kabza De Small'],
+  'amapiano': ['Kabza De Small','DJ Maphorisa','Focalistic','Uncle Waffles','Busta 929'],
+  'kuduro': ['Iedil Diniz','C\'Est La Vie','Jozilton Belo'],
+  'dancehall_electric': ['Popcaan','Shenseea','Alkaline','Vybz Kartel'],
+  'mueve': ['Bad Bunny','Rauw Alejandro','Arcángel'],
+  'perreo': ['Karol G','Nicky Jam','Zion & Lennox'],
+  'bongo': ['Diamond Platnumz','Ali Kiba','Ray C','Alikiba'],
+  'azonto': ['Aziz Azion','Reggie Rockstone','Ghana artists'],
+  'kwaito': ['Trompies','Arthur Mafokate','TKZee','Boom Shaka'],
+  'scouse': ['Leftfield','Sasha & Digweed','Scouse House Collective'],
+  'balti': ['Punjabi MC','Apache Indian','Dhandholia'],
+  'dancehall_afroswing': ['Wizkid','Afrobeats movement leaders','African dancers'],
+  'bushfire': ['Jaunt','Jack Newcome','Aus electronic pioneers'],
+  'dark_garage': ['Jammer','P Money','Tinchy Stryder'],
+  'hardtekno': ['Surgeon','Ancient Methods','Len Faki','Andy Catalogue']
+};
+/* ===== GENRE INTELLIGENCE MAP FOR MASHUP MODE ===== */
+const GENRE_INTELLIGENCE = {
+  'Trap': { moods: ['Dark','Aggressive','Intense'], energies: ['High','Driving','Explosive'], bpmRange: [135, 150], keys: ['C minor','F minor','D minor'], topics: ['Flex & Confidence','Street Life','Personal Struggle'] },
+  'EDM': { moods: ['Euphoric','Joyful','Uplifting'], energies: ['High','Explosive','Frantic'], bpmRange: [120, 135], keys: ['A major','E major','G major'], topics: ['Celebration','Dancing & Movement','Euphoria'] },
+  'Hip Hop': { moods: ['Dark','Intense','Aggressive'], energies: ['Driving','High','Medium'], bpmRange: [90, 110], keys: ['E minor','G minor','D minor'], topics: ['Street Life','Flex & Confidence','Storytelling'] },
+  'R&B': { moods: ['Romantic','Bittersweet','Intense'], energies: ['Medium','Chill','Driving'], bpmRange: [70, 95], keys: ['Ab major','Eb major','F major'], topics: ['Love & Relationships','Toxic Love','Sensuality'] },
+  'Rock': { moods: ['Intense','Dark','Triumphant'], energies: ['High','Explosive','Driving'], bpmRange: [100, 140], keys: ['E minor','G minor','A minor'], topics: ['Alienation','Rebellion','Personal Struggle'] },
+  'Pop': { moods: ['Joyful','Uplifting','Bittersweet'], energies: ['High','Medium','Driving'], bpmRange: [95, 125], keys: ['C major','G major','D major'], topics: ['Love & Relationships','Celebration','Empowerment'] },
+  'Ambient': { moods: ['Peaceful','Dreamy','Mysterious'], energies: ['Low','Chill','Medium'], bpmRange: [60, 85], keys: ['C major','A major','F major'], topics: ['Nostalgia & Memory','Nature & Place','Introspection'] },
+  'Jazz': { moods: ['Romantic','Melancholic','Joyful'], energies: ['Chill','Medium','Driving'], bpmRange: [85, 120], keys: ['Eb major','F major','Bb major'], topics: ['Romance','Melancholy','Artistry'] },
+  'Classical': { moods: ['Intense','Triumphant','Epic'], energies: ['Building','High','Medium'], bpmRange: [70, 100], keys: ['D minor','E minor','C major'], topics: ['Triumph & Overcoming','Epic','Timeless'] },
+  'House': { moods: ['Euphoric','Joyful','Mysterious'], energies: ['High','Driving','Explosive'], bpmRange: [120, 130], keys: ['F major','A major','G major'], topics: ['Dancing & Movement','Celebration','Community'] },
+  'Techno': { moods: ['Dark','Intense','Mysterious'], energies: ['High','Driving','Explosive'], bpmRange: [120, 135], keys: ['C minor','F minor','G minor'], topics: ['Futurism','Intensity','Hypnotic'] },
+  'Indie Rock': { moods: ['Bittersweet','Melancholic','Dreamy'], energies: ['Medium','Driving','Chill'], bpmRange: [90, 120], keys: ['D major','A major','G major'], topics: ['Alienation','Nostalgia & Memory','Introspection'] },
+  'Country': { moods: ['Melancholic','Nostalgic','Bittersweet'], energies: ['Medium','Chill','Driving'], bpmRange: [85, 110], keys: ['G major','D major','A major'], topics: ['Heartbreak','Small-town life','Nostalgia & Memory'] },
+  'Soul': { moods: ['Romantic','Melancholic','Uplifting'], energies: ['Medium','Chill','High'], bpmRange: [85, 110], keys: ['F major','Bb major','Eb major'], topics: ['Love & Relationships','Vulnerability','Empowerment'] },
+  'Downtempo': { moods: ['Peaceful','Dreamy','Melancholic'], energies: ['Low','Chill','Medium'], bpmRange: [85, 100], keys: ['C major','F major','Bb major'], topics: ['Introspection','Nostalgia & Memory','Late-night Vibes'] },
+  'Metal': { moods: ['Aggressive','Dark','Intense'], energies: ['Explosive','High','Driving'], bpmRange: [120, 160], keys: ['E minor','D minor','F# minor'], topics: ['Inner demons','Rebellion','Dark & Existential'] },
+  'Folk': { moods: ['Nostalgic','Melancholic','Peaceful'], energies: ['Low','Medium','Chill'], bpmRange: [80, 110], keys: ['G major','D major','A major'], topics: ['Nostalgia & Memory','Nature & Place','Storytelling'] },
+  'Synth Pop': { moods: ['Euphoric','Joyful','Dreamy'], energies: ['High','Medium','Driving'], bpmRange: [100, 130], keys: ['A major','E major','D major'], topics: ['Love & Relationships','Nostalgia & Memory','Celebration'] },
+  'Cinematic': { moods: ['Epic','Intense','Triumphant'], energies: ['Building','High','Medium'], bpmRange: [80, 110], keys: ['E minor','D minor','A minor'], topics: ['Epic','Triumph & Overcoming','Adventure'] }
+};
+/* ===== RHYME SCHEME MAPPINGS ===== */
+const RHYME_SCHEMES_BY_GENRE = {
+  'Trap': ['AABB', 'ABAB', 'Free Verse'],
+  'Hip Hop': ['AABB', 'ABAB', 'Free Verse'],
+  'R&B': ['ABAB', 'ABCB', 'Free Verse'],
+  'Pop': ['ABAB', 'AABB', 'Free Verse'],
+  'Rock': ['ABAB', 'AABB', 'Free Verse'],
+  'Country': ['AABB', 'ABAB', 'ABCB'],
+  'Folk': ['AABB', 'ABAB', 'Free Verse'],
+  'Jazz': ['Free Verse', 'ABAB', 'ABCB'],
+  'Soul': ['ABAB', 'AABB', 'Free Verse'],
+  'Ambient': ['Free Verse'],
+  'Electronic': ['Free Verse', 'AABB'],
+  'House': ['Free Verse', 'AABB'],
+  'Techno': ['Free Verse', 'AABB'],
+  'Metal': ['AABB', 'ABAB', 'AAAA'],
+  'Emo': ['ABAB', 'AABB', 'Free Verse'],
+  'Indie Rock': ['ABAB', 'Free Verse', 'AABB'],
+  'Classical': ['Free Verse', 'ABBA'],
+  'Opera': ['AABB', 'ABAB'],
+  'Rap': ['AABB', 'ABAB', 'Free Verse'],
+  'Phonk': ['AABB', 'ABAB', 'Free Verse']
+};
+const RHYME_SCHEME_DESCRIPTIONS = {
+  'AABB': 'Couplets (lines 1-2 rhyme, 3-4 rhyme)',
+  'ABAB': 'Alternating (lines 1-3 rhyme, 2-4 rhyme)',
+  'ABCB': 'Simple (lines 2-4 rhyme)',
+  'ABBA': 'Enclosed (lines 1-4 rhyme, 2-3 rhyme)',
+  'AAAA': 'Monorhyme (all lines rhyme)',
+  'Free Verse': 'No required rhyming - natural flow'
+};
+/* ===== NARRATIVE TOPIC BUNDLES ===== */
+const TOPIC_NARRATIVES = [
+  { name: 'Rise to Glory', categories: ['Personal Struggle', 'Celebration', 'Flex & Confidence'] },
+  { name: 'Breaking Free', categories: ['Rebellion & Freedom', 'Social Commentary', 'Celebration'] },
+  { name: 'Inner Strength', categories: ['Personal Struggle', 'Faith & Spirituality', 'Celebration'] },
+  { name: 'Descent Into Darkness', categories: ['Dark & Existential', 'Personal Struggle', 'Loss & Grief'] },
+  { name: 'Lost & Seeking', categories: ['Personal Struggle', 'Dark & Existential', 'Nostalgia & Memory'] },
+  { name: 'Inner Demons', categories: ['Dark & Existential', 'Personal Struggle', 'Rebellion & Freedom'] },
+  { name: 'Love Story', categories: ['Love & Relationships', 'Celebration', 'Flex & Confidence'] },
+  { name: 'Heartbreak Journey', categories: ['Love & Relationships', 'Loss & Grief', 'Personal Struggle'] },
+  { name: 'Obsession & Desire', categories: ['Love & Relationships', 'Dark & Existential', 'Nostalgia & Memory'] },
+  { name: 'Epic Adventure', categories: ['Nature & Place', 'Celebration', 'Flex & Confidence'] },
+  { name: 'Lost in Paradise', categories: ['Nature & Place', 'Nostalgia & Memory', 'Love & Relationships'] },
+  { name: 'Storm & Survival', categories: ['Nature & Place', 'Personal Struggle', 'Celebration'] },
+  { name: 'Midnight Rebellion', categories: ['Night Life & Vibes', 'Rebellion & Freedom', 'Social Commentary'] },
+  { name: 'City Lights & Dreams', categories: ['Night Life & Vibes', 'Nostalgia & Memory', 'Love & Relationships'] },
+  { name: 'Underground Movement', categories: ['Night Life & Vibes', 'Rebellion & Freedom', 'Flex & Confidence'] },
+  { name: 'Supreme Confidence', categories: ['Flex & Confidence', 'Celebration', 'Street & Hustle'] },
+  { name: 'Hustle & Grind', categories: ['Street & Hustle', 'Flex & Confidence', 'Celebration'] },
+  { name: 'Street Chronicles', categories: ['Street & Hustle', 'Social Commentary', 'Personal Struggle'] },
+  { name: 'Cosmic Journey', categories: ['Nostalgia & Memory', 'Faith & Spirituality', 'Nature & Place'] },
+  { name: 'Altered Reality', categories: ['Dark & Existential', 'Nostalgia & Memory', 'Faith & Spirituality'] },
+  { name: 'Transcendence Quest', categories: ['Faith & Spirituality', 'Celebration', 'Flex & Confidence'] }
+];
+const SUNO_RULES = `You are an expert Suno AI song creator AND a music encyclopedia who deeply understands the sonic identity of every genre and subgenre. Generate a complete song with a creative title.
+CRITICAL FORMAT RULES:
+- (adlibs) in parentheses are sung ad-libs — place them naturally throughout verses and choruses
+- [ ] brackets are for structure/production cues — NEVER SUNG
+- ALL CAPS = louder delivery (use max 1-3 words per section, not entire lines)
+- "" = spoken/whispered delivery
+- Use | pipes for meta tag stacking inside brackets (max 4-6 per bracket)
+- Emotion delivery tags go on their own line BEFORE the emotional lyric line
+- Long ellipsis (...........) = stretch/sustain a note
+STYLE PROMPT RULES — THIS IS THE MOST IMPORTANT SECTION:
+Your style prompt MUST capture the authentic sonic fingerprint of the genre like a real producer would describe it. Think about what makes this genre SOUND the way it does — the specific production techniques, vocal deliveries, textures, and energy that define it.
+Write the style prompt the way a real A&R or producer would pitch the sound. Include:
+- Era and region/scene when relevant (2020s Atlanta, 90s Seattle, 80s Tokyo, etc.)
+- Specific vocal delivery descriptors (sassy delivery, raspy tone, breathy vocals, rapid-fire flow, guttural screams — NOT just "male vocals")
+- Exact production textures (distorted 808s, crispy hi-hat rolls, tape-saturated, lo-fi bitcrushed, warm analog pads — NOT just "synth")
+- Energy and vibe descriptors (mosh pit energy, late-night drive, club-ready, stadium anthem, bedroom pop intimacy)
+- Rhythm and groove feel (bouncy percussion, syncopated groove, blast beats, half-time feel, dembow riddim)
+- Cultural sonic markers that define the subgenre
+EXAMPLES OF GOOD STYLE PROMPTS:
+- Trap: "2024, Atlanta, trap, hip hop, male vocals, aggressive delivery, confident persona, heavy distorted 808 bass, crispy hi-hat rolls, dark melodic synths, rapid-fire flow, hard-hitting snares, menacing energy, street anthem, punchy percussion, 140 BPM, D minor"
+- Phonk: "2023, Memphis-inspired phonk, dark trap, male vocals, low raspy delivery, cowbell patterns, pitched-down vocal samples, heavy 808 slides, lo-fi texture, eerie synths, trunk-rattling bass, horror movie atmosphere, aggressive, gritty, 130 BPM, C# minor"
+- Pop Punk: "2004, pop punk, punk rock, male vocals, raspy nasal delivery, fast power chords, driving drum beat, melodic bass lines, anthemic gang vocals, youthful angst, energetic, nostalgic, catchy hooks, palm-muted verses, explosive choruses, 168 BPM, E minor"
+- R&B: "2023, R&B, neo-soul, female vocals, breathy falsetto, intimate delivery, silky smooth, warm Rhodes piano, deep sub bass, soft brushed drums, lush string pads, late-night atmosphere, sensual, vulnerable, slow groove, 68 BPM, Ab major"
+- Drill: "2022, UK drill, hip hop, male vocals, cold monotone delivery, sliding 808 bass, sharp snare patterns, eerie piano melodies, dark pads, menacing, street-ready, aggressive, rapid flow, 140 BPM, C# minor"
+- Grunge: "1994, Seattle, grunge, alternative rock, male vocals, raw raspy delivery, heavy distorted guitars, thick fuzzy bass, loose powerful drumming, angst-filled, lo-fi grit, dynamic quiet-loud contrast, apathetic energy, feedback-drenched, 126 BPM, E minor"
+- Hyperpop: "2021, hyperpop, electropop, female vocals, pitch-shifted delivery, heavy autotune, distorted bass drops, glitchy percussion, maximalist production, sugar-coated chaos, bubblegum meets industrial, bright synths, fast tempo, chaotic energy, 160 BPM, E minor"
+BAD STYLE PROMPT (generic AI slop — NEVER do this):
+- "EDM, synth, drums, female vocals, energetic, uplifting, 128 BPM" ← This is trash. Too generic. Says nothing about the actual sound.
+- Front-load the most defining sonic descriptors in the first 20-30 words
+- Up to 1000 characters
+- Always include BPM and key at the end
+ARTIST CHANNELING (CRITICAL):
+If a reference artist is provided, you MUST channel their EXACT sonic identity into the style prompt AND their lyrical style into the lyrics. This means:
+- Style prompt: Describe the sound AS IF this artist produced the track. Use their era, their region, their signature production techniques, their vocal delivery style, their energy. Think about what makes THEIR music instantly recognizable and put that into the style prompt.
+- Lyrics: Write in the same style, tone, vocabulary, flow patterns, and emotional register this artist uses. If it's Playboi Carti, write with that minimal, ad-lib-heavy, baby voice energy. If it's Adele, write with that gut-wrenching emotional depth and powerful delivery. If it's MF DOOM, write with dense wordplay and abstract storytelling. Match their vibe EXACTLY.
+- Do NOT mention the artist's name in the style prompt or lyrics — just channel their sonic DNA and writing style.
+SECTION RULES:
+- Every section must start with a section tag before any lyrics
+- Stack relevant meta tags with pipes: [Chorus | anthemic | stacked harmonies]
+- Use category tags for precision: [Vocal: ...], [Instrumentation: ...], [Mix: ...]
+DUET RULES (if duet is requested):
+- Style prompt must declare "This is a duet between [Name A] (male/female) and [Name B] (male/female)"
+- Add [Duet: Name A male and Name B female] at top of lyrics
+- Label each section with singer: [Name A], [Name B], or [Both]
+- Assign full verses to one singer; don't alternate line-by-line
+AD-LIB FORMAT: Place [adlib TAG] on its own line between lyric lines.
+SCREAM FORMAT: [Scream] or [Growl] tag, then ALL CAPS with stretched vowels (AAAAAH not AH).
+OUTPUT FORMAT — use EXACTLY these delimiters on their own lines:
+===TITLE===
+(a creative, catchy song title that fits the genre and concept)
+===STYLE PROMPT===
+(the style prompt for Suno's style prompt box — MUST capture the authentic sonic DNA of the genre as described above)
+===LYRICS===
+(complete lyrics with all meta tags, section tags, formatting symbols, and proper structure)
+===SLIDER SETTINGS===
+Weirdness: X%
+Style Influence: Y%
+(brief explanation)
+CLICHÉ AVOIDANCE — MANDATORY:
+You MUST avoid the following clichéd elements. Using any of these will ruin the song. Write with ORIGINALITY.
+BANNED PHRASES (never use these or close variants):
+Deep inside, Heart-to-heart, Touch my soul, Eye to eye, Take my hand, Hand-in-hand, Side by side, Up and down, We've just begun, Can't stand the pain, Give me half a chance, Such a long time, All night long, Rest of my life, No one can take your place, Lonely nights, I'll get along, Calling out your name, More than friends, Fooling around, Heaven above, Break these chains, Take it easy, Can't live without you, Somebody else, Break my heart, Try one more time, Can't go on, Keep holding on, Always be true, Pay the price, Right or wrong, In and out, By my side, Hurts so bad, Can't take it, Last chance, Night and day, The test of time, Someone like you, All my love, Say you'll be mine, How it used to be, It's gonna be all right, Set me free, Work it out, True to you, Kiss your lips, Falling apart, Taken for granted, Lost without you, Safe and warm, Broken heart, All we've been through, End of the line, Hold on, Never let you go, Rise above, Face-to-face, Back and forth, Walk out that door, Feel the pain, Gotta take a chance, Take your time, The rest of time, End of time, No one like you, Losing sleep, Made up my mind, Get down on my knees, End it all, Had your fun, Done you wrong, Back to me, Make you stay, Asking too much, No tomorrow, Give you my heart, Aching heart, Want you / need you / love you, Now or never, Over the hill, Know for sure, Hold me tight, What we're fighting for, You know it's true, Hold me close, Forget my foolish pride, Drive me crazy, Going insane, All my dreams come true, Come what may, With every step/breath/touch.
+BANNED RHYME PAIRS (find unexpected rhymes instead):
+Hand/understand/command, Walk/talk, Kiss/miss, Dance/chance/romance, Eyes/realize/sighs/lies, Fire/desire/higher, Burn/yearn/learn, Forever/together/never, Friend/end, Cry/die/try/lie/good-bye/deny, Best/rest/test, Love/above/dove, Hide/inside/denied, Touch/much, Begun/done, Blues/lose, Lover/discover/cover, Light/night/sight/tight/fight/right, Take it/make it/fake it/shake it, Change/rearrange, Ache/break, Tears/fears, Door/before/more, Heart/start/apart/part, Wrong/strong/song/long, Word/heard, Arms/charms/harm/warm, True/blue/through, Pain/rain/same, Stronger/longer, Maybe/baby, Knees/please.
+BANNED IMAGERY (find fresh, specific images instead):
+Lips, Soft/smooth skin, Sky, Shadow, Crying, Key, Eyes, Hair, Warmth of arms, Light, Bed, Knock, Door, Smile, Silky hair, Kiss, Sun going down, Lying in bed, Wall, Hands, Voice, Moon, Stars, Night, Tears, Lock, Chains, Glass of wine, Feel the beat, Flowers, Fireplace, Sweat, Rose, Telephone, Flashing lights, Cuts like a knife, Perfume, Dance floor, Neon, Walking in the city, Painted sky, Painting.
+BANNED METAPHORS (create original comparisons):
+Storm for anger (thunder, lightning, dark clouds, wind, hurricane, tornado), Fire for love or passion (burn, spark, heat, flame, consumed, ashes), Seasons for stages of life or relationships, Cold for emotional indifference (ice, freeze, frozen), Walls for protection from harm, Drown in love, Darkness for ignorance/sadness/loneliness (night, blind, shadows), Rain for tears, Prison for love (chains), Light for knowledge or happiness (shine, sun, blinded by love), Broken heart (breaking, cracked, shattered, torn-in-half, broken inside).
+BANNED OVERUSED WORDS (avoid these entirely or use extreme sparingly — max 1 per entire song):
+Neon, Echoes, Symphony, Shadows, Intertwined/entwined, Melody, Spectral, Whispers/whispered dreams, Crimson, Electric/digital glow, Grace, Embrace, Soar, Pulse, Dreams/chasing dreams, Collide, Unfold, Mystery, Tangled sheets.
+INSTEAD: Use hyper-specific, concrete, genre-authentic language. Reference real objects, places, textures, smells, sounds. Surprise the listener with unexpected word choices and fresh comparisons that feel REAL, not generated.`;
+/* ===== OPENROUTER API HELPERS ===== */
+function pickRandomTopicsFromNarrative(narrativeBundle) {
+  var pick = function(arr) { return arr[Math.floor(Math.random() * arr.length)]; };
+  selectedTopics = [];
+  narrativeBundle.categories.forEach(function(cat) {
+    if (TOPICS[cat]) {
+      selectedTopics.push(pick(TOPICS[cat]));
+    }
+  });
+}
+async function parseSSEStream(response, onDelta) {
+  var reader = response.body.getReader();
+  var decoder = new TextDecoder();
+  var buffer = '';
+  var full = '';
+  while (true) {
+    var result = await reader.read();
+    if (result.done) break;
+    buffer += decoder.decode(result.value, { stream: true });
+    var lines = buffer.split(String.fromCharCode(10));
+    buffer = lines.pop() || '';
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i];
+      if (line.startsWith('data: ')) {
+        var data = line.slice(6).trim();
+        if (data === '[DONE]') continue;
+        try {
+          var json = JSON.parse(data);
+          var delta = json.choices && json.choices[0] && json.choices[0].delta && json.choices[0].delta.content;
+          if (delta) {
+            full += delta;
+            if (onDelta) onDelta(delta, full);
+          }
+        } catch (e) { /* ignore */ }
+      }
+    }
+  }
+  if (buffer.trim()) {
+    var line = buffer;
+    if (line.startsWith('data: ')) {
+      var data = line.slice(6).trim();
+      if (data !== '[DONE]') {
+        try {
+          var json = JSON.parse(data);
+          var delta = json.choices && json.choices[0] && json.choices[0].delta && json.choices[0].delta.content;
+          if (delta) {
+            full += delta;
+            if (onDelta) onDelta(delta, full);
+          }
+        } catch (e) {}
+      }
+    }
+  }
+  return full;
+}
+
+/* ===== STATE ===== */
+let selectedTemplate = null;
+let selectedInstruments = new Set();
+let selectedTopics = [];
+let isGenerating = false;
+let isConcepting = false;
+let currentArtist = '';
+let rawTitleContent = '';
+let rawStyleContent = '';
+let rawLyricsContent = '';
+let rawSliderContent = '';
+let isInstrumentalMode = false;
+let isMashupMode = false;
+let isGenre1Locked = false;
+let isGenre2Locked = false;
+let selectedRhymeScheme = '';
+/* ===== INIT ===== */
+function init() {
+  initTheme();
+  buildTemplateGrid();
+  populateSelect('genre1', GENRES, true);
+  populateSelect('genre2', GENRES, true);
+  populateSelect('mood', null, false, MOODS);
+  populateSelect('energy', null, false, ENERGIES);
+  populateSelect('keySelect', null, false, KEYS);
+  buildInstrumentChips();
+  buildTopicSelector();
+  document.getElementById('bpmSlider').addEventListener('input', function() {
+    document.getElementById('bpmVal').textContent = this.value;
+  });
+  document.getElementById('genre1').addEventListener('change', function() {
+    updateSuggestedTopics();
+    updateRhymeSchemes();
+  });
+  document.getElementById('genre2').addEventListener('change', function() {
+    updateSuggestedTopics();
+    updateRhymeSchemes();
+  });
+}
+function initTheme() {
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+    document.documentElement.classList.add('light');
+  }
+  window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', function(e) {
+    if (e.matches) {
+      document.documentElement.classList.add('light');
+    } else {
+      document.documentElement.classList.remove('light');
+    }
+  });
+}
+function setInstrumentalMode(isInstrumental) {
+  isInstrumentalMode = isInstrumental;
+}
+function setMashupMode(isMashup) {
+  isMashupMode = isMashup;
+  var genre2Container = document.getElementById('genre2Container');
+  var randomizeBtn = document.getElementById('randomizeBtn');
+  if (genre2Container) {
+    genre2Container.style.display = isMashup ? 'block' : 'none';
+  }
+  if (randomizeBtn) {
+    randomizeBtn.style.display = isMashup ? 'block' : 'none';
+  }
+  // Reset genre2 when toggling off
+  if (!isMashup) {
+    document.getElementById('genre2').value = '';
+    isGenre2Locked = false;
+    var genre2LockBtn = document.getElementById('genre2LockBtn');
+    if (genre2LockBtn) {
+      genre2LockBtn.classList.remove('locked');
+      genre2LockBtn.innerHTML = '🔓';
+    }
+  }
+}
+function toggleGenre1Lock() {
+  isGenre1Locked = !isGenre1Locked;
+  var lockBtn = document.getElementById('genre1LockBtn');
+  if (lockBtn) {
+    lockBtn.classList.toggle('locked', isGenre1Locked);
+    lockBtn.innerHTML = isGenre1Locked ? '🔒' : '🔓';
+    lockBtn.title = isGenre1Locked ? 'Unlock genre 1' : 'Lock genre 1';
+  }
+  updateRhymeSchemes();
+}
+function toggleGenre2Lock() {
+  isGenre2Locked = !isGenre2Locked;
+  var lockBtn = document.getElementById('genre2LockBtn');
+  if (lockBtn) {
+    lockBtn.classList.toggle('locked', isGenre2Locked);
+    lockBtn.innerHTML = isGenre2Locked ? '🔒' : '🔓';
+    lockBtn.title = isGenre2Locked ? 'Unlock genre 2' : 'Lock genre 2';
+  }
+}
+function updateRhymeSchemes() {
+  var genre1 = document.getElementById('genre1').value;
+  var rhymeSelect = document.getElementById('rhymeSchemeSelect');
+  var rhymeDesc = document.getElementById('rhymeSchemeDesc');
+  if (!genre1) {
+    rhymeDesc.textContent = 'Scheme will be suggested based on your selected genre.';
+    return;
+  }
+  // Find matching genre in RHYME_SCHEMES_BY_GENRE
+  var matchedGenre = Object.keys(RHYME_SCHEMES_BY_GENRE).find(function(key) {
+    return genre1.toLowerCase().includes(key.toLowerCase()) || key.toLowerCase().includes(genre1.toLowerCase());
+  });
+  if (matchedGenre && RHYME_SCHEMES_BY_GENRE[matchedGenre]) {
+    var schemes = RHYME_SCHEMES_BY_GENRE[matchedGenre];
+    var firstScheme = schemes[0];
+    rhymeSelect.value = '';
+    rhymeDesc.textContent = 'Recommended: ' + firstScheme + ' - ' + RHYME_SCHEME_DESCRIPTIONS[firstScheme];
+    selectedRhymeScheme = '';
+  } else {
+    rhymeDesc.textContent = 'Scheme will be suggested based on your selected genre.';
+    selectedRhymeScheme = '';
+  }
+}
+function setRhymeScheme(scheme) {
+  selectedRhymeScheme = scheme;
+  var rhymeDesc = document.getElementById('rhymeSchemeDesc');
+  if (scheme && RHYME_SCHEME_DESCRIPTIONS[scheme]) {
+    rhymeDesc.textContent = RHYME_SCHEME_DESCRIPTIONS[scheme];
+  } else {
+    updateRhymeSchemes();
+  }
+}
+function randomizeFullMashup() {
+  if (!isMashupMode) return;
+  var genre1Select = document.getElementById('genre1');
+  var genre2Select = document.getElementById('genre2');
+  // Get all available genre options (excluding the first "— Select —" option)
+  var genre1Options = Array.from(genre1Select.options).slice(1).map(function(o) { return o.value; });
+  var genre2Options = Array.from(genre2Select.options).slice(1).map(function(o) { return o.value; });
+  if (genre1Options.length === 0 || genre2Options.length === 0) return;
+  // Only randomize genre1 if it's not locked
+  var randomGenre1;
+  if (isGenre1Locked) {
+    randomGenre1 = genre1Select.value; // Keep current genre1
+  } else {
+    randomGenre1 = genre1Options[Math.floor(Math.random() * genre1Options.length)];
+  }
+  // Only randomize genre2 if it's not locked
+  var randomGenre2;
+  if (isGenre2Locked) {
+    randomGenre2 = genre2Select.value; // Keep current genre2
+  } else {
+    randomGenre2 = genre2Options[Math.floor(Math.random() * genre2Options.length)];
+    while (randomGenre2 === randomGenre1 && genre2Options.length > 1) {
+      randomGenre2 = genre2Options[Math.floor(Math.random() * genre2Options.length)];
+    }
+  }
+  // Set genres
+  genre1Select.value = randomGenre1;
+  genre2Select.value = randomGenre2;
+  // Get intelligence data for both genres (find best match)
+  var intel1 = Object.keys(GENRE_INTELLIGENCE).find(function(k) { return randomGenre1.toLowerCase().includes(k.toLowerCase()) || k.toLowerCase().includes(randomGenre1.toLowerCase()); });
+  var intel2 = Object.keys(GENRE_INTELLIGENCE).find(function(k) { return randomGenre2.toLowerCase().includes(k.toLowerCase()) || k.toLowerCase().includes(randomGenre2.toLowerCase()); });
+  // Use first genre's intelligence as primary
+  var primary = GENRE_INTELLIGENCE[intel1] || { moods: ['Dark','Intense'], energies: ['High','Driving'], bpmRange: [100, 130], keys: ['C minor','E minor'], topics: ['Flex & Confidence','Personal Struggle'] };
+  var secondary = GENRE_INTELLIGENCE[intel2] || { moods: ['Dark','Intense'], energies: ['High','Driving'], bpmRange: [100, 130], keys: ['C minor','E minor'], topics: ['Flex & Confidence','Personal Struggle'] };
+  // Merge mood, energy, key pools
+  var allMoods = Array.from(new Set([...primary.moods, ...secondary.moods]));
+  var allEnergies = Array.from(new Set([...primary.energies, ...secondary.energies]));
+  var allKeys = Array.from(new Set([...primary.keys, ...secondary.keys]));
+  // Get ALL available topics from TOPICS constant
+  var allAvailableTopics = [];
+  Object.keys(TOPICS).forEach(function(category) {
+    if (Array.isArray(TOPICS[category])) {
+      allAvailableTopics = allAvailableTopics.concat(TOPICS[category]);
+    }
+  });
+  // Randomly select from merged pools
+  var randomMood = allMoods[Math.floor(Math.random() * allMoods.length)];
+  var randomEnergy = allEnergies[Math.floor(Math.random() * allEnergies.length)];
+  var randomBPM = Math.floor(Math.random() * (primary.bpmRange[1] - primary.bpmRange[0] + 1)) + primary.bpmRange[0];
+  var randomKey = allKeys[Math.floor(Math.random() * allKeys.length)];
+  var randomTopic = allAvailableTopics[Math.floor(Math.random() * allAvailableTopics.length)];
+  // Set form fields
+  document.getElementById('mood').value = randomMood;
+  document.getElementById('energy').value = randomEnergy;
+  document.getElementById('bpmSlider').value = randomBPM;
+  document.getElementById('bpmVal').textContent = randomBPM;
+  document.getElementById('keySelect').value = randomKey;
+  // Get all topic chips and select the random one
+  var topicChips = document.querySelectorAll('[data-topic]');
+  topicChips.forEach(function(chip) {
+    chip.classList.remove('active');
+  });
+  var targetChip = document.querySelector('[data-topic="' + randomTopic + '"]');
+  if (targetChip) {
+    targetChip.classList.add('active');
+    selectedTopics = [randomTopic];
+  }
+  // Randomly select an artist that fits the mashup
+  var allArtists = [];
+  var artistKey1 = Object.keys(NICHE_ARTISTS).find(function(k) { return randomGenre1.toLowerCase().includes(k.toLowerCase()) || k.toLowerCase().includes(randomGenre1.toLowerCase()); });
+  var artistKey2 = Object.keys(NICHE_ARTISTS).find(function(k) { return randomGenre2.toLowerCase().includes(k.toLowerCase()) || k.toLowerCase().includes(randomGenre2.toLowerCase()); });
+  if (artistKey1 && NICHE_ARTISTS[artistKey1]) allArtists = allArtists.concat(NICHE_ARTISTS[artistKey1]);
+  if (artistKey2 && NICHE_ARTISTS[artistKey2]) allArtists = allArtists.concat(NICHE_ARTISTS[artistKey2]);
+  if (allArtists.length > 0) {
+    var randomArtist = allArtists[Math.floor(Math.random() * allArtists.length)];
+    currentArtist = randomArtist;
+    document.getElementById('artistName').textContent = randomArtist;
+    document.getElementById('artistDisplay').style.display = 'block';
+  }
+  // Auto-generate the song
+  generateSong();
+}
+/* ===== UI BUILDERS ===== */
+function buildTemplateGrid() {
+  const grid = document.getElementById('templateGrid');
+  grid.innerHTML = TEMPLATES.map(function(t) {
+    return '<div class="tmpl-card" data-id="' + t.id + '" onclick="selectTemplate(\'' + t.id + '\')">' +
+      '<div class="tmpl-icon">' + t.icon + '</div>' +
+      '<div class="tmpl-name">' + t.name + '</div>' +
+    '</div>';
+  }).join('');
+}
+function populateSelect(id, grouped, hasGroups, flat) {
+  const sel = document.getElementById(id);
+  let html = '<option value="">— Select —</option>';
+  if (hasGroups && grouped) {
+    Object.keys(grouped).forEach(function(cat) {
+      html += '<optgroup label="' + cat + '">';
+      grouped[cat].forEach(function(g) {
+        html += '<option value="' + g + '">' + g + '</option>';
+      });
+      html += '</optgroup>';
+    });
+  } else if (flat) {
+    flat.forEach(function(v) {
+      html += '<option value="' + v + '">' + v + '</option>';
+    });
+  }
+  sel.innerHTML = html;
+}
+function buildInstrumentChips() {
+  const container = document.getElementById('instrumentChips');
+  container.innerHTML = INSTRUMENTS.map(function(inst) {
+    return '<div class="chip" data-inst="' + inst + '" onclick="toggleInstrument(this, \'' + inst + '\')">' + inst + '</div>';
+  }).join('');
+}
+/* ===== TOPIC SELECTOR ===== */
+function buildTopicSelector() {
+  var catSel = document.getElementById('topicCategory');
+  Object.keys(TOPICS).forEach(function(cat) {
+    var opt = document.createElement('option');
+    opt.value = cat;
+    opt.textContent = cat;
+    catSel.appendChild(opt);
+  });
+  renderTopicChips('all');
+}
+function renderTopicChips(filter) {
+  var container = document.getElementById('topicChipsContainer');
+  var html = '';
+  var cats = filter === 'all' ? Object.keys(TOPICS) : [filter];
+  var suggestedCats = getSuggestedCategories();
+  cats.forEach(function(cat) {
+    if (!TOPICS[cat]) return;
+    var isSuggested = suggestedCats.indexOf(cat) !== -1;
+    if (filter === 'all') {
+      html += '<span class="topic-cat-label' + (isSuggested ? ' suggested' : '') + '">' + cat + (isSuggested ? ' ★' : '') + '</span>';
+    }
+    html += '<div class="chip-container" style="margin-bottom:4px">';
+    TOPICS[cat].forEach(function(topic) {
+      var isActive = selectedTopics.indexOf(topic) !== -1;
+      var cls = 'chip';
+      if (isActive) cls += ' active';
+      else if (isSuggested) cls += ' suggested';
+      html += '<div class="' + cls + '" data-topic="' + topic + '" data-category="' + cat + '" onclick="toggleTopic(\'' + topic.replace(/'/g, "\\'") + '\')">' + topic + '</div>';
+    });
+    html += '</div>';
+  });
+  container.innerHTML = html;
+}
+function getSuggestedCategories() {
+  var g1 = document.getElementById('genre1').value;
+  var g2 = document.getElementById('genre2').value;
+  var cats = {};
+  if (g1 && GENRE_TOPICS[g1]) {
+    GENRE_TOPICS[g1].forEach(function(c) { cats[c] = true; });
+  }
+  if (g2 && GENRE_TOPICS[g2]) {
+    GENRE_TOPICS[g2].forEach(function(c) { cats[c] = true; });
+  }
+  return Object.keys(cats);
+}
+function updateSuggestedTopics() {
+  var filter = document.getElementById('topicCategory').value;
+  renderTopicChips(filter);
+}
+function filterTopics() {
+  var val = document.getElementById('topicCategory').value;
+  renderTopicChips(val);
+}
+function toggleTopic(topic) {
+  var idx = selectedTopics.indexOf(topic);
+  if (idx !== -1) {
+    selectedTopics.splice(idx, 1);
+  } else {
+    if (selectedTopics.length >= 3) {
+      showToast('Max 3 topics — remove one first');
+      return;
+    }
+    selectedTopics.push(topic);
+  }
+  updateTopicUI();
+  if (selectedTopics.length > 0) {
+    generateConcept();
+  }
+}
+function removeTopic(topic) {
+  var idx = selectedTopics.indexOf(topic);
+  if (idx !== -1) {
+    selectedTopics.splice(idx, 1);
+    updateTopicUI();
+  }
+}
+function updateTopicUI() {
+  // Update chip active states
+  document.querySelectorAll('#topicChipsContainer .chip').forEach(function(el) {
+    var t = el.getAttribute('data-topic');
+    if (selectedTopics.indexOf(t) !== -1) {
+      el.classList.add('active');
+    } else {
+      el.classList.remove('active');
+    }
+  });
+  // Update selected topics bar
+  var bar = document.getElementById('selectedTopicsBar');
+  if (selectedTopics.length === 0) {
+    bar.innerHTML = '';
+    return;
+  }
+  bar.innerHTML = selectedTopics.map(function(t) {
+    return '<span class="selected-topic-tag">' + t + ' <span class="remove-topic" onclick="removeTopic(\'' + t.replace(/'/g, "\\'") + '\')"><i class="fas fa-xmark"></i></span></span>';
+  }).join('');
+}
+function surpriseTopic() {
+  var allTopics = [];
+  Object.values(TOPICS).forEach(function(arr) { allTopics = allTopics.concat(arr); });
+  // Filter out already selected
+  var available = allTopics.filter(function(t) { return selectedTopics.indexOf(t) === -1; });
+  if (available.length === 0) {
+    showToast('All topics selected!');
+    return;
+  }
+  var pick = available[Math.floor(Math.random() * available.length)];
+  if (selectedTopics.length >= 3) {
+    selectedTopics.shift();
+  }
+  selectedTopics.push(pick);
+  updateTopicUI();
+  showToast('🎯 ' + pick);
+  generateConcept();
+}
+/* ===== ARTIST PICKER ===== */
+function pickArtist(templateId) {
+  var g1 = document.getElementById('genre1').value;
+  var g2 = document.getElementById('genre2').value;
+  var pick = function(arr) { return arr[Math.floor(Math.random() * arr.length)]; };
+  var candidates = [];
+  // Check niche artists first (template-specific)
+  if (templateId && NICHE_ARTISTS[templateId]) {
+    candidates = NICHE_ARTISTS[templateId];
+  }
+  // If no niche match, try genre-based lookup
+  if (candidates.length === 0 && g1 && GENRE_ARTISTS[g1]) {
+    candidates = GENRE_ARTISTS[g1];
+  }
+  if (candidates.length === 0 && g2 && GENRE_ARTISTS[g2]) {
+    candidates = GENRE_ARTISTS[g2];
+  }
+  // Fallback
+  if (candidates.length === 0) {
+    candidates = ['Artist\'s choice'];
+  }
+  currentArtist = pick(candidates);
+  updateArtistDisplay();
+}
+function rerollArtist() {
+  var templateId = selectedTemplate;
+  var prev = currentArtist;
+  var attempts = 0;
+  do {
+    pickArtist(templateId);
+    attempts++;
+  } while (currentArtist === prev && attempts < 10);
+  showToast('🎤 ' + currentArtist);
+}
+function updateArtistDisplay() {
+  var el = document.getElementById('artistDisplay');
+  var nameEl = document.getElementById('artistName');
+  if (currentArtist && currentArtist !== 'Artist\'s choice') {
+    nameEl.textContent = currentArtist;
+    el.style.display = 'flex';
+  } else {
+    el.style.display = 'none';
+  }
+}
+/* ===== CARD TOGGLE ===== */
+function toggleCard(header) {
+  header.classList.toggle('open');
+  const body = header.nextElementSibling;
+  body.classList.toggle('open');
+}
+/* ===== TEMPLATE SELECTION ===== */
+function selectTemplate(id) {
+  const t = TEMPLATES.find(function(x) { return x.id === id; });
+  if (!t) return;
+  document.querySelectorAll('.tmpl-card').forEach(function(c) { c.classList.remove('active'); });
+  if (selectedTemplate === id) {
+    selectedTemplate = null;
+    return;
+  }
+  selectedTemplate = id;
+  document.querySelector('.tmpl-card[data-id="' + id + '"]').classList.add('active');
+  // Disable mashup mode when a template is selected
+  if (document.getElementById('mashupToggle')) {
+    document.getElementById('mashupToggle').checked = false;
+    setMashupMode(false);
+  }
+  document.getElementById('genre1').value = t.g1;
+  document.getElementById('genre2').value = t.g2;
+  document.getElementById('mood').value = t.mood;
+  document.getElementById('energy').value = t.energy;
+  document.getElementById('bpmSlider').value = t.bpm;
+  document.getElementById('bpmVal').textContent = t.bpm;
+  document.getElementById('keySelect').value = t.key;
+  if (t.vocal) document.getElementById('vocalType').value = t.vocal;
+  if (t.style) document.getElementById('vocalStyle').value = t.style;
+  selectedInstruments.clear();
+  document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
+  t.instr.forEach(function(inst) {
+    selectedInstruments.add(inst);
+    var chip = document.querySelector('.chip[data-inst="' + inst + '"]');
+    if (chip) chip.classList.add('active');
+  });
+  // Light up matching topics and pick a random artist
+  updateSuggestedTopics();
+  updateRhymeSchemes();
+  pickArtist(id);
+  if (selectedTopics.length > 0) {
+    generateConcept();
+  }
+}
+/* ===== INSTRUMENT TOGGLE ===== */
+function toggleInstrument(el, name) {
+  if (selectedInstruments.has(name)) {
+    selectedInstruments.delete(name);
+    el.classList.remove('active');
+  } else {
+    selectedInstruments.add(name);
+    el.classList.add('active');
+  }
+}
+/* ===== RANDOMIZE ===== */
+function randomizeSettings() {
+  var allGenres = [];
+  Object.values(GENRES).forEach(function(arr) { allGenres = allGenres.concat(arr); });
+  var pick = function(arr) { return arr[Math.floor(Math.random() * arr.length)]; };
+  document.getElementById('genre1').value = pick(allGenres);
+  document.getElementById('genre2').value = Math.random() > 0.3 ? pick(allGenres) : '';
+  document.getElementById('mood').value = pick(MOODS);
+  document.getElementById('energy').value = pick(ENERGIES);
+  var bpm = 70 + Math.floor(Math.random() * 130);
+  document.getElementById('bpmSlider').value = bpm;
+  document.getElementById('bpmVal').textContent = bpm;
+  document.getElementById('keySelect').value = pick(KEYS);
+  selectedInstruments.clear();
+  document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
+  var numInst = 2 + Math.floor(Math.random() * 3);
+  var shuffled = INSTRUMENTS.slice().sort(function() { return 0.5 - Math.random(); });
+  for (var i = 0; i < numInst; i++) {
+    selectedInstruments.add(shuffled[i]);
+    var chip = document.querySelector('.chip[data-inst="' + shuffled[i] + '"]');
+    if (chip) chip.classList.add('active');
+  }
+  var vocalTypes = ['male','female','','duet'];
+  document.getElementById('vocalType').value = pick(vocalTypes);
+  document.getElementById('vocalStyle').value = '';
+  // Pick a random template
+  var randomTemplate = pick(TEMPLATES);
+  selectTemplate(randomTemplate.id);
+  // Pick a coherent narrative topic bundle instead of random topics
+  selectedTopics = [];
+  var narrativeBundle = pick(TOPIC_NARRATIVES);
+  pickRandomTopicsFromNarrative(narrativeBundle);
+  showToast('📖 ' + narrativeBundle.name + ' — ' + selectedTopics.join(', '));
+  updateSuggestedTopics();
+  // Pick a random artist and generate concept
+  pickArtist(null);
+  generateConcept();
+}
+/* ===== SURPRISE ME TOPICS ONLY ===== */
+function surpriseTopics() {
+  var pick = function(arr) { return arr[Math.floor(Math.random() * arr.length)]; };
+  var narrativeBundle = pick(TOPIC_NARRATIVES);
+  pickRandomTopicsFromNarrative(narrativeBundle);
+  showToast('📖 ' + narrativeBundle.name);
+  updateSuggestedTopics();
+  generateConcept();
+}
+/* ===== RESET ===== */
+function resetAll() {
+  document.getElementById('genre1').value = '';
+  document.getElementById('genre2').value = '';
+  document.getElementById('mood').value = '';
+  document.getElementById('energy').value = '';
+  document.getElementById('bpmSlider').value = 120;
+  document.getElementById('bpmVal').textContent = '120';
+  document.getElementById('keySelect').value = '';
+  document.getElementById('timeSig').value = '4/4';
+  document.getElementById('vocalType').value = '';
+  document.getElementById('vocalStyle').value = '';
+  document.getElementById('songConcept').value = '';
+  document.getElementById('extraInstructions').value = '';
+  document.getElementById('customInstruments').value = '';
+  selectedInstruments.clear();
+  document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
+  selectedTemplate = null;
+  document.querySelectorAll('.tmpl-card').forEach(function(c) { c.classList.remove('active'); });
+  selectedTopics = [];
+  document.getElementById('topicCategory').value = 'all';
+  renderTopicChips('all');
+  document.getElementById('selectedTopicsBar').innerHTML = '';
+  currentArtist = '';
+  document.getElementById('artistDisplay').style.display = 'none';
+  document.getElementById('outputSections').style.display = 'none';
+  document.getElementById('streamArea').style.display = 'none';
+  document.getElementById('errorMsg').style.display = 'none';
+  document.getElementById('emptyState').style.display = 'block';
+}
+/* ===== PROMPT BUILDER ===== */
+function buildPrompt() {
+  var g1 = document.getElementById('genre1').value;
+  var g2 = document.getElementById('genre2').value;
+  var mood = document.getElementById('mood').value;
+  var energy = document.getElementById('energy').value;
+  var bpm = document.getElementById('bpmSlider').value;
+  var key = document.getElementById('keySelect').value;
+  var timeSig = document.getElementById('timeSig').value;
+  var vocalType = document.getElementById('vocalType').value;
+  var vocalStyle = document.getElementById('vocalStyle').value;
+  var concept = document.getElementById('songConcept').value.trim();
+  var extra = document.getElementById('extraInstructions').value.trim();
+  var custom = document.getElementById('customInstruments').value.trim();
+  var instruments = Array.from(selectedInstruments);
+  if (custom) {
+    custom.split(',').forEach(function(c) {
+      var t = c.trim();
+      if (t) instruments.push(t);
+    });
+  }
+  var prompt = SUNO_RULES + '\n\n';
+  prompt += 'USER SPECIFICATIONS:\n';
+  prompt += 'Primary Genre: ' + (g1 || 'Your choice — pick something that fits the concept') + '\n';
+  if (isMashupMode && g2) {
+    prompt += 'MASHUP MODE: Blend ' + g1 + ' with ' + g2 + ' to create an EPIC HYBRID SOUND\n';
+    prompt += 'This should not be a simple combination — create something sonically innovative and fresh. Take the core identity of both genres and fuse them in an unexpected, powerful way.\n';
+  } else if (g2) {
+    prompt += 'Secondary Genre: ' + g2 + '\n';
+  }
+  prompt += 'Mood: ' + (mood || 'Your choice') + '\n';
+  prompt += 'Energy: ' + (energy || 'Your choice') + '\n';
+  prompt += 'BPM: ' + bpm + '\n';
+  prompt += 'Key: ' + (key || 'Your choice') + '\n';
+  if (timeSig !== '4/4') prompt += 'Time Signature: ' + timeSig + '\n';
+  if (instruments.length > 0) prompt += 'Instruments: ' + instruments.join(', ') + '\n';
+  if (vocalType) prompt += 'Vocal Type: ' + vocalType + '\n';
+  if (vocalStyle) prompt += 'Vocal Style: ' + vocalStyle + '\n';
+  // Add rhyme scheme instruction
+  var rhymeScheme = selectedRhymeScheme;
+  if (!rhymeScheme) {
+    // Use recommended scheme from genre
+    var genre1 = document.getElementById('genre1').value;
+    var matchedGenre = Object.keys(RHYME_SCHEMES_BY_GENRE).find(function(key) {
+      return genre1.toLowerCase().includes(key.toLowerCase()) || key.toLowerCase().includes(genre1.toLowerCase());
+    });
+    if (matchedGenre && RHYME_SCHEMES_BY_GENRE[matchedGenre]) {
+      rhymeScheme = RHYME_SCHEMES_BY_GENRE[matchedGenre][0];
+    }
+  }
+  if (rhymeScheme && !isInstrumentalMode) {
+    prompt += 'Rhyme Scheme: ' + rhymeScheme + '\n';
+    if (rhymeScheme === 'Free Verse') {
+      prompt += 'Use natural, flowing lyrics without strict rhyming requirements. Prioritize natural phrasing and meaning over forced rhymes.\n';
+    } else {
+      prompt += 'Follow the ' + rhymeScheme + ' rhyme scheme (' + RHYME_SCHEME_DESCRIPTIONS[rhymeScheme] + '), but prioritize natural flow and meaning over perfect adherence. If a line reads better unrhymed, that\'s okay.\n';
+    }
+  }
+  if (currentArtist && currentArtist !== 'Artist\'s choice') {
+    prompt += '\n⚡ REFERENCE ARTIST: ' + currentArtist + '\n';
+    prompt += 'Channel ' + currentArtist + '\'s EXACT sonic identity into the style prompt — their signature production, vocal delivery, textures, energy, era, region. Write the lyrics in their style — their vocabulary, flow, emotional register, writing patterns. Make this sound like THEY made it. Do NOT mention their name in the output.\n\n';
+  }
+  if (selectedTopics.length > 0) {
+    prompt += '\n⚡ MANDATORY TOPIC(S): ' + selectedTopics.join(', ') + '\n';
+    prompt += 'The song MUST be about ' + (selectedTopics.length > 1 ? 'these topics' : 'this topic') + '. Make ' + (selectedTopics.length > 1 ? 'them' : 'it') + ' the central theme woven throughout every section.\n';
+    var hasFaith = selectedTopics.some(function(t) { return Object.prototype.hasOwnProperty.call(TOPICS, 'Faith & Spirituality') && TOPICS['Faith & Spirituality'].indexOf(t) !== -1; });
+    if (hasFaith) {
+      prompt += 'IMPORTANT: For spiritual/faith content, use "Yah" instead of "God" or "Lord" throughout all lyrics. Never write "God" or "Lord" — always "Yah". This is non-negotiable.\n';
+      prompt += 'BIBLICAL CONTENT: The song should celebrate faith, grace, redemption, spiritual strength, and divine guidance. Use biblical references, spiritual imagery, and messages of hope. Make it spiritually uplifting and authentic to faith traditions.\n';
+    }
+    var hasLove = selectedTopics.some(function(t) { return t.includes('love') || t.includes('crush') || t.includes('relationship') || t.includes('devotion') || t.includes('match') || t.includes('together') || t.includes('bliss') || t.includes('forever'); });
+    if (hasLove) {
+      prompt += 'LOVE & POSITIVE RELATIONSHIPS: Balance any sad or negative aspects with GENUINE JOY and HAPPINESS. If mentioning heartbreak, show resilience and moving forward. For happy love topics, emphasize the beauty of connection, loyalty, growth, and commitment. Make the listener FEEL the positive emotions and hope. Use vivid, specific imagery of real love: a knowing glance, inside jokes, growing old together, how they make you feel, small acts of devotion.\n';
+    }
+  }
+  if (concept) {
+    prompt += 'Song Concept: ' + concept + '\n';
+  } else {
+    prompt += 'Song Concept: Create an original, creative concept that fits the genre and mood.\n';
+  }
+  if (extra) prompt += 'Additional Instructions: ' + extra + '\n';
+  if (isInstrumentalMode) {
+    prompt += '\n⚡ INSTRUMENTAL MODE\n';
+    prompt += 'Generate ONLY an instrumental track. You will output:\n';
+    prompt += '===TITLE===\n(A creative title for this instrumental track)\n\n';
+    prompt += '===STYLE PROMPT===\n(The style prompt capturing the sonic DNA)\n\n';
+    prompt += '===SLIDER SETTINGS===\n(The slider settings)\n\n';
+    prompt += 'DO NOT generate any lyrics or ===LYRICS=== section. This is instrumental only.\n';
+    prompt += 'The TITLE should reflect the mood/atmosphere of the instrumental. The STYLE PROMPT should describe the sonic character, production, instrumentation, textures, and energy as a producer or A&R would.\n';
+    prompt += 'Output ONLY in the specified format with the ===TITLE===, ===STYLE PROMPT===, and ===SLIDER SETTINGS=== delimiters. NO ===LYRICS=== section.';
+  } else {
+    prompt += '\nGenerate a professional, creative, emotionally resonant song with a catchy title. Make lyrics vivid and original — write like a REAL artist in this genre, not like an AI.\n';
+    prompt += 'The STYLE PROMPT is critical — it must capture the authentic sonic DNA of this genre. Think about real artists, real production styles, real vocal deliveries. Describe the SOUND the way a producer or A&R would: era, region, specific textures, delivery style, percussion feel, bass character, atmosphere. NOT generic tags.\n';
+    prompt += 'CRITICAL: Follow the CLICHÉ AVOIDANCE section strictly. Zero tolerance for banned phrases, rhyme pairs, imagery, metaphors, or overused words. Every line must feel fresh and specific.\n';
+    prompt += 'Use proper Suno meta tags and formatting. Output ONLY in the specified format with the ===TITLE===, ===STYLE PROMPT===, ===LYRICS===, and ===SLIDER SETTINGS=== delimiters.';
+  }
+  return prompt;
+}
+/* ===== GENERATE CONCEPT VIA LLM ===== */
+async function generateConcept() {
+  if (isConcepting) return;
+  isConcepting = true;
+  var conceptEl = document.getElementById('songConcept');
+  var extraEl = document.getElementById('extraInstructions');
+  conceptEl.value = '';
+  extraEl.value = '';
+  conceptEl.placeholder = '✨ Dreaming up a concept...';
+  extraEl.placeholder = '✨ Crafting instructions...';
+  conceptEl.classList.add('concepting');
+  extraEl.classList.add('concepting');
+  var g1 = document.getElementById('genre1').value;
+  var g2 = document.getElementById('genre2').value;
+  var mood = document.getElementById('mood').value;
+  var energy = document.getElementById('energy').value;
+  var vocalType = document.getElementById('vocalType').value;
+  var vocalStyle = document.getElementById('vocalStyle').value;
+  var bpm = document.getElementById('bpmSlider').value;
+  var key = document.getElementById('keySelect').value;
+  var instruments = Array.from(selectedInstruments);
+  var custom = document.getElementById('customInstruments').value.trim();
+  if (custom) {
+    custom.split(',').forEach(function(c) { var t = c.trim(); if (t) instruments.push(t); });
+  }
+  var prompt = 'You are a veteran songwriter and music culture expert who deeply understands every genre from the inside. Given these musical settings, come up with a song concept that feels AUTHENTIC — like something a real artist in this genre would actually write and release.\n\n';
+  prompt += 'RULES:\n';
+  prompt += '- NO corny AI-sounding ideas. No "neon-soaked cyber journeys", "digital dreamscapes", "echoes of tomorrow", or abstract robot nonsense.\n';
+  prompt += '- Think like a REAL artist who lives and breathes this genre. What are they going through? What do they talk about?\n';
+  prompt += '- For trap/drill/phonk/rage: the block, the grind, come-up stories, opps, flexing, loyalty and betrayal, late night sessions, street politics, paranoia, drip\n';
+  prompt += '- For boom bap/hip hop: storytelling, social commentary, lyrical skill, the hustle, neighborhood life, self-reflection, battle mentality\n';
+  prompt += '- For R&B/neo-soul: toxic love, late-night calls, situationships, vulnerability, body, intimacy, self-worth, growing apart, beautiful love stories, commitment, deep connection, celebration of passion\n';
+  prompt += '- For pop: heartbreak anthems, summer love, dancing through pain, self-empowerment, that one person you can\'t forget, happy love stories, falling in love, celebrating togetherness, joyful romance\n';
+  prompt += '- For rock/punk/grunge: alienation, suburban boredom, addiction, rage against authority, broken friendships, feeling like an outsider\n';
+  prompt += '- For metal/metalcore/doom: inner demons, war, existential dread, vengeance, descent into madness, defiance\n';
+  prompt += '- For emo/emo rap: depression, heartbreak, feeling misunderstood, lost friends, nostalgia for better times, self-destruction\n';
+  prompt += '- For country/folk/bluegrass: small-town life, family, loss of a loved one, dirt roads, drinking to forget, working hands, homecoming\n';
+  prompt += '- For electronic/house/trance: the dancefloor, losing yourself tonight, connection with strangers, the drop, sunrise after the party, euphoric release\n';
+  prompt += '- For reggae/dancehall/afrobeat: good vibes, resistance, island life, dancing, community, love and desire, celebration\n';
+  prompt += '- For jazz/blues/bossa nova: smoky bars, heartache, rainy nights, a woman who left, finding peace, the road\n';
+  prompt += '- For hyperpop/witch house/vaporwave: digital loneliness, mall nostalgia, sensory overload, internet culture, identity crisis, chaotic beauty\n';
+  prompt += '- For crunkcore/nightcore: manic party energy, reckless youth, not giving a fuck, chaos and fun\n';
+  prompt += '- Be SPECIFIC — real characters, real places, real moments. "She left her jacket in your car and you keep finding her hair ties" > "love and loss"\n';
+  prompt += '- Keep it grounded and emotionally honest\n';
+  prompt += '- CLICHÉ BAN: Do NOT use any of these in your concept: neon lights, echoes, shadows, whispers, symphony, intertwined, crimson, electric glow, soar, pulse, chasing dreams, collide, unfold, mystery, tangled sheets, broken heart, fire/flame for passion, storm for anger, rain for tears, walls for emotional protection, chains for love, drowning in love. No "neon-soaked" anything. No abstract poetic fluff. Write like a REAL person describing a REAL moment.\n\n';
+  if (selectedTopics.length > 0) {
+    prompt += '\n⚡ MANDATORY TOPIC(S): ' + selectedTopics.join(', ') + '\n';
+    prompt += 'The concept MUST be built around ' + (selectedTopics.length > 1 ? 'these topics' : 'this topic') + '. Weave ' + (selectedTopics.length > 1 ? 'them' : 'it') + ' into the story naturally — the topic should be the CORE of the concept, not a footnote.\n';
+    var hasFaith = selectedTopics.some(function(t) { return Object.prototype.hasOwnProperty.call(TOPICS, 'Faith & Spirituality') && TOPICS['Faith & Spirituality'].indexOf(t) !== -1; });
+    if (hasFaith) {
+      prompt += 'IMPORTANT: For spiritual/faith topics, use "Yah" instead of "God" or "Lord" throughout. This is non-negotiable.\n';
+      prompt += 'BIBLICAL THEMES: Create concepts inspired by biblical values, stories, and messages. Include themes of grace, redemption, faith, divine love, salvation, spiritual growth, biblical promises, and Yah\'s guidance. The song should feel spiritually uplifting and authentic to faith traditions.\n';
+    }
+    var hasLove = selectedTopics.some(function(t) { return t.includes('love') || t.includes('crush') || t.includes('relationship') || t.includes('devotion') || t.includes('match') || t.includes('together'); });
+    if (hasLove) {
+      prompt += 'LOVE & RELATIONSHIP THEMES: For love-related topics, balance ANY negative aspects with POSITIVE, HAPPY elements. If the topic includes heartbreak, also show resilience and hope. If it\'s about a new relationship, emphasize the joy and excitement. Include themes of genuine connection, loyalty, growth together, commitment, and happiness. Make it feel like a REAL love story that lifts people up.\n';
+    }
+  }
+  prompt += '\nSETTINGS:\n';
+  if (g1) prompt += '- Genre: ' + g1 + (g2 ? ' / ' + g2 : '') + '\n';
+  if (mood) prompt += '- Mood: ' + mood + '\n';
+  if (energy) prompt += '- Energy: ' + energy + '\n';
+  if (vocalType) prompt += '- Vocal: ' + vocalType + (vocalStyle ? ' (' + vocalStyle + ')' : '') + '\n';
+  if (instruments.length > 0) prompt += '- Instruments: ' + instruments.join(', ') + '\n';
+  prompt += '- BPM: ' + bpm + '\n';
+  if (key) prompt += '- Key: ' + key + '\n';
+  if (currentArtist && currentArtist !== 'Artist\'s choice') {
+    prompt += '\n⚡ REFERENCE ARTIST: ' + currentArtist + '\n';
+    prompt += 'Think about what ' + currentArtist + ' would actually write a song about. What themes, stories, and emotions are in THEIR catalog? The concept should feel like it belongs on one of their projects. Match their artistic perspective and subject matter.\n';
+  }
+  prompt += '\nRespond in EXACTLY this format (no extra text):\n';
+  prompt += 'CONCEPT: (2-3 sentences — the specific story, situation, characters, emotion. Paint a picture, not a thesis statement.)\n';
+  prompt += 'INSTRUCTIONS: (1 sentence — specific production/arrangement direction that fits this genre\'s sonic identity for Suno AI. Think like a real producer giving notes.)';
+  try {
+    var res = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: prompt })
+    });
+    var data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error || data.message || res.statusText || 'Concept request failed');
+    }
+    var text = (data.content || '').trim();
+    var conceptMatch = text.match(/CONCEPT:s*([sS]*?)(?=
+INSTRUCTIONS:|$)/i);
+    var instrMatch = text.match(/INSTRUCTIONS:s*([sS]*?)$/i);
+    var concept = conceptMatch ? conceptMatch[1].trim() : text;
+    var instructions = instrMatch ? instrMatch[1].trim() : '';
+    conceptEl.value = concept;
+    extraEl.value = instructions;
+    conceptEl.placeholder = 'Describe the theme, story, or emotion...';
+    extraEl.placeholder = 'e.g. Include a guitar solo, add ad-libs, make the bridge emotional';
+    conceptEl.classList.remove('concepting');
+    extraEl.classList.remove('concepting');
+    isConcepting = false;
+  } catch (err) {
+    isConcepting = false;
+    conceptEl.placeholder = 'Describe the theme, story, or emotion...';
+    extraEl.placeholder = 'e.g. Include a guitar solo, add ad-libs, make the bridge emotional';
+    conceptEl.classList.remove('concepting');
+    extraEl.classList.remove('concepting');
+    showToast(err.message || 'Concept failed');
+  }
+}
+/* ===== GENERATE ===== */
+async function generateSong() {
+  if (isGenerating) return;
+  isGenerating = true;
+  document.getElementById('errorMsg').style.display = 'none';
+  document.getElementById('outputSections').style.display = 'none';
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('streamArea').style.display = 'none';
+  showLoading();
+  var btn = document.getElementById('generateBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="equalizer"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div> GENERATING...';
+  var prompt = buildPrompt();
+  try {
+    var res = await fetch('/api/generate-stream', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: prompt })
+    });
+    if (!res.ok) {
+      var errData = await res.json().catch(function() { return {}; });
+      throw new Error(errData.error || res.statusText || 'Generation failed');
+    }
+    var streamEl = document.getElementById('streamArea');
+    streamEl.style.display = 'block';
+    var fullContent = '';
+    await parseSSEStream(res, function(delta, full) {
+      fullContent = full;
+      streamEl.textContent = fullContent;
+      streamEl.scrollTop = streamEl.scrollHeight;
+    });
+    hideLoading();
+    streamEl.style.display = 'none';
+    parseAndDisplay(fullContent);
+    isGenerating = false;
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-bolt"></i> GENERATE SONG';
+  } catch (err) {
+    hideLoading();
+    showError(err.message || 'Failed to generate. Please try again.');
+    isGenerating = false;
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-bolt"></i> GENERATE SONG';
+  }
+}
+/* ===== PARSE & DISPLAY ===== */
+function parseAndDisplay(content) {
+  var btn = document.getElementById('generateBtn');
+  btn.innerHTML = '<i class="fas fa-bolt"></i> GENERATE SONG';
+  btn.disabled = false;
+  var titleMatch = content.match(/===TITLE===\s*\n([\s\S]*?)(?=\n===STYLE PROMPT===)/);
+  var styleMatch = content.match(/===STYLE PROMPT===\s*\n([\s\S]*?)(?=\n===(LYRICS|SLIDER SETTINGS)===)/);
+  var lyricsMatch = content.match(/===LYRICS===\s*\n([\s\S]*?)(?=\n===SLIDER SETTINGS===)/);
+  var sliderMatch = content.match(/===SLIDER SETTINGS===\s*\n([\s\S]*?)$/);
+  rawTitleContent = titleMatch ? titleMatch[1].trim() : '';
+  rawStyleContent = styleMatch ? styleMatch[1].trim() : '';
+  rawLyricsContent = lyricsMatch ? lyricsMatch[1].trim() : '';
+  rawSliderContent = sliderMatch ? sliderMatch[1].trim() : '';
+  if (!rawTitleContent && !rawStyleContent && !rawLyricsContent) {
+    var altTitle = content.match(/---TITLE---\s*\n([\s\S]*?)(?=\n---STYLE PROMPT---)/);
+    var altStyle = content.match(/---STYLE PROMPT---\s*\n([\s\S]*?)(?=\n---(LYRICS|SLIDER)---)/);
+    var altLyrics = content.match(/---LYRICS---\s*\n([\s\S]*?)(?=\n---SLIDER|$)/);
+    var altSlider = content.match(/---SLIDER SETTINGS---\s*\n([\s\S]*?)$/);
+    rawTitleContent = altTitle ? altTitle[1].trim() : '';
+    rawStyleContent = altStyle ? altStyle[1].trim() : '';
+    rawLyricsContent = altLyrics ? altLyrics[1].trim() : '';
+    rawSliderContent = altSlider ? altSlider[1].trim() : '';
+  }
+  if (!rawTitleContent && !rawStyleContent && !rawLyricsContent) {
+    rawLyricsContent = content;
+    rawTitleContent = 'Untitled';
+    rawStyleContent = '(Could not parse — check full output above)';
+  }
+  if (!rawTitleContent) rawTitleContent = 'Untitled';
+  document.getElementById('titleContent').innerHTML = highlightSuno(rawTitleContent);
+  document.getElementById('styleContent').innerHTML = highlightSuno(rawStyleContent);
+  document.getElementById('lyricsContent').innerHTML = highlightSuno(rawLyricsContent);
+  document.getElementById('sliderContent').innerHTML = highlightSuno(rawSliderContent || 'Weirdness: 30%\nStyle Influence: 85%');
+  // Hide lyrics section in instrumental mode
+  var lyricsSection = document.querySelector('[id="outputSections"] .output-section:nth-child(3)');
+  if (lyricsSection) {
+    lyricsSection.style.display = isInstrumentalMode ? 'none' : 'block';
+  }
+  document.getElementById('outputSections').style.display = 'block';
+}
+/* ===== SYNTAX HIGHLIGHTING ===== */
+function highlightSuno(text) {
+  var escaped = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  escaped = escaped.replace(/\[([^\]]+)\]/g, '<span class="hl-bracket">[$1]</span>');
+  escaped = escaped.replace(/\(([^)]+)\)/g, '<span class="hl-paren">($1)</span>');
+  escaped = escaped.replace(/\b([A-Z]{2,})\b/g, '<span class="hl-caps">$1</span>');
+  return escaped;
+}
+/* ===== COPY ===== */
+function copySection(id, btnEl) {
+  var rawMap = {
+    'titleContent': rawTitleContent,
+    'styleContent': rawStyleContent,
+    'lyricsContent': rawLyricsContent,
+    'sliderContent': rawSliderContent
+  };
+  var text = rawMap[id] || document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    btnEl.classList.add('copied');
+    btnEl.innerHTML = '<i class="fas fa-check"></i> Copied!';
+    setTimeout(function() {
+      btnEl.classList.remove('copied');
+      btnEl.innerHTML = '<i class="fas fa-copy"></i> Copy';
+    }, 2000);
+  });
+}
+/* ===== LOADING ===== */
+function showLoading() { document.getElementById('loadingState').style.display = 'block'; }
+function hideLoading() { document.getElementById('loadingState').style.display = 'none'; }
+/* ===== ERROR ===== */
+function showError(msg) {
+  var el = document.getElementById('errorMsg');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+/* ===== TOAST ===== */
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 1800);
+}
+/* ===== TAG REFERENCE ===== */
+function openTagReference() {
+  var content = document.getElementById('tagContent');
+  var html = '';
+  Object.keys(TAG_REFERENCE).forEach(function(cat) {
+    html += '<div class="tag-category">';
+    html += '<h4>' + cat + '</h4>';
+    html += '<div class="tag-list">';
+    TAG_REFERENCE[cat].forEach(function(tag) {
+      html += '<div class="tag-item" onclick="copyTag(this, \'' + tag.replace(/'/g, "\\'") + '\')">' + tag + '</div>';
+    });
+    html += '</div></div>';
+  });
+  content.innerHTML = html;
+  document.getElementById('tagModal').classList.add('open');
+}
+function closeTagReference() {
+  document.getElementById('tagModal').classList.remove('open');
+}
+function copyTag(el, tag) {
+  navigator.clipboard.writeText(tag).then(function() {
+    el.style.background = 'var(--accent-dim)';
+    el.style.borderColor = 'var(--accent)';
+    setTimeout(function() {
+      el.style.background = '';
+      el.style.borderColor = '';
+    }, 800);
+    showToast('Copied: ' + tag);
+  });
+}
+/* Close modal on overlay click */
+document.getElementById('tagModal').addEventListener('click', function(e) {
+  if (e.target === this) closeTagReference();
+});
+/* ===== START ===== */
+init();
+</script>
+</body>
+</html>
