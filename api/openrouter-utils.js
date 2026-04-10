@@ -10,6 +10,9 @@ export function resolvePrimaryModel(modelFromClient) {
   return 'openai/gpt-4o-mini';
 }
 
+/** Max length for `models` fallback array (OpenRouter API limit). */
+const MAX_FALLBACK_MODELS = 3;
+
 const FALLBACK_MODELS = [
   'openai/gpt-4o-mini',
   'meta-llama/llama-3.3-70b-instruct',
@@ -19,13 +22,15 @@ const FALLBACK_MODELS = [
 
 export function buildOpenRouterChatBody(prompt, modelFromClient, stream) {
   const primary = resolvePrimaryModel(modelFromClient);
-  const fallbacks = FALLBACK_MODELS.filter((m) => m !== primary);
+  const fallbacks = FALLBACK_MODELS.filter((m) => m !== primary).slice(0, MAX_FALLBACK_MODELS);
 
   const body = {
     model: primary,
-    models: fallbacks,
     messages: [{ role: 'user', content: prompt }],
   };
+  if (fallbacks.length > 0) {
+    body.models = fallbacks;
+  }
   if (stream) body.stream = true;
   return body;
 }
