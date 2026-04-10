@@ -650,6 +650,20 @@ html.light .chip.suggested {
   <div class="main-grid">
     <!-- ==================== CONFIG PANEL ==================== -->
     <div class="config-panel">
+      <!-- OpenRouter model -->
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-header open" onclick="toggleCard(this)">
+          <h3><i class="fas fa-robot"></i> OpenRouter Model</h3>
+          <i class="fas fa-chevron-down chevron"></i>
+        </div>
+        <div class="card-body open">
+          <label>Model for concept &amp; song</label>
+          <select id="openRouterModel"></select>
+          <label style="margin-top:12px">Custom model ID (optional)</label>
+          <input type="text" id="openRouterModelCustom" placeholder="Overrides dropdown — e.g. meta-llama/llama-3.3-70b-instruct" autocomplete="off">
+          <p style="margin-top:8px; font-size:12px; color:var(--text-muted); line-height:1.4">Empty = use <code style="font-size:11px">OPENROUTER_MODEL</code> on the server (Vercel env). See <a href="https://openrouter.ai/models" target="_blank" rel="noopener noreferrer">openrouter.ai/models</a>.</p>
+        </div>
+      </div>
       <!-- Templates -->
       <div class="card" style="margin-bottom:12px">
         <div class="card-header open" onclick="toggleCard(this)">
@@ -1514,6 +1528,23 @@ const TOPIC_NARRATIVES = [
   { name: 'Altered Reality', categories: ['Dark & Existential', 'Nostalgia & Memory', 'Faith & Spirituality'] },
   { name: 'Transcendence Quest', categories: ['Faith & Spirituality', 'Celebration', 'Flex & Confidence'] }
 ];
+const OPENROUTER_MODEL_OPTIONS = [
+  { value: '', label: 'Server default (OPENROUTER_MODEL env)' },
+  { value: 'anthropic/claude-3.5-sonnet', label: 'Claude 3.5 Sonnet' },
+  { value: 'anthropic/claude-3.5-haiku', label: 'Claude 3.5 Haiku' },
+  { value: 'anthropic/claude-sonnet-4', label: 'Claude Sonnet 4' },
+  { value: 'anthropic/claude-opus-4', label: 'Claude Opus 4' },
+  { value: 'openai/gpt-4o', label: 'GPT-4o' },
+  { value: 'openai/gpt-4o-mini', label: 'GPT-4o mini' },
+  { value: 'openai/o1', label: 'OpenAI o1' },
+  { value: 'google/gemini-2.0-flash-001', label: 'Gemini 2.0 Flash' },
+  { value: 'google/gemini-pro-1.5', label: 'Gemini Pro 1.5' },
+  { value: 'meta-llama/llama-3.3-70b-instruct', label: 'Llama 3.3 70B Instruct' },
+  { value: 'mistralai/mistral-large-2411', label: 'Mistral Large' },
+  { value: 'deepseek/deepseek-chat', label: 'DeepSeek Chat' },
+  { value: 'deepseek/deepseek-r1', label: 'DeepSeek R1' },
+  { value: 'x-ai/grok-2-1212', label: 'Grok 2' }
+];
 const SUNO_RULES = `You are an expert Suno AI song creator AND a music encyclopedia who deeply understands the sonic identity of every genre and subgenre. Generate a complete song with a creative title.
 CRITICAL FORMAT RULES:
 - (adlibs) in parentheses are sung ad-libs — place them naturally throughout verses and choruses
@@ -1658,8 +1689,21 @@ let isGenre1Locked = false;
 let isGenre2Locked = false;
 let selectedRhymeScheme = '';
 /* ===== INIT ===== */
+function getOpenRouterModel() {
+  var custom = document.getElementById('openRouterModelCustom').value.trim();
+  if (custom) return custom;
+  var sel = document.getElementById('openRouterModel').value;
+  return sel || undefined;
+}
+function buildOpenRouterModelSelect() {
+  var sel = document.getElementById('openRouterModel');
+  sel.innerHTML = OPENROUTER_MODEL_OPTIONS.map(function(o) {
+    return '<option value="' + o.value.replace(/"/g, '&quot;') + '">' + o.label + '</option>';
+  }).join('');
+}
 function init() {
   initTheme();
+  buildOpenRouterModelSelect();
   buildTemplateGrid();
   populateSelect('genre1', GENRES, true);
   populateSelect('genre2', GENRES, true);
@@ -2160,6 +2204,8 @@ function resetAll() {
   document.getElementById('songConcept').value = '';
   document.getElementById('extraInstructions').value = '';
   document.getElementById('customInstruments').value = '';
+  document.getElementById('openRouterModel').value = '';
+  document.getElementById('openRouterModelCustom').value = '';
   selectedInstruments.clear();
   document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
   selectedTemplate = null;
@@ -2350,16 +2396,15 @@ async function generateConcept() {
     var res = await fetch('/api/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: prompt })
+      body: JSON.stringify({ prompt: prompt, model: getOpenRouterModel() })
     });
     var data = await res.json();
     if (!res.ok) {
       throw new Error(data.error || data.message || res.statusText || 'Concept request failed');
     }
     var text = (data.content || '').trim();
-    var conceptMatch = text.match(/CONCEPT:s*([sS]*?)(?=
-INSTRUCTIONS:|$)/i);
-    var instrMatch = text.match(/INSTRUCTIONS:s*([sS]*?)$/i);
+    var conceptMatch = text.match(/CONCEPT:\s*([\s\S]*?)(?=\nINSTRUCTIONS:|$)/i);
+    var instrMatch = text.match(/INSTRUCTIONS:\s*([\s\S]*?)$/i);
     var concept = conceptMatch ? conceptMatch[1].trim() : text;
     var instructions = instrMatch ? instrMatch[1].trim() : '';
     conceptEl.value = concept;
@@ -2395,7 +2440,7 @@ async function generateSong() {
     var res = await fetch('/api/generate-stream', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: prompt })
+      body: JSON.stringify({ prompt: prompt, model: getOpenRouterModel() })
     });
     if (!res.ok) {
       var errData = await res.json().catch(function() { return {}; });
