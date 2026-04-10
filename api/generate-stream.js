@@ -1,3 +1,5 @@
+import { buildOpenRouterChatBody, parseOpenRouterErrorBody } from './openrouter-utils.js';
+
 export const config = {
   runtime: 'edge',
 };
@@ -21,7 +23,8 @@ export default async function handler(req) {
     const siteUrl =
       process.env.OPENROUTER_SITE_URL ||
       (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://localhost');
-    const modelId = model || process.env.OPENROUTER_MODEL || 'anthropic/claude-3.5-sonnet';
+
+    const body = buildOpenRouterChatBody(prompt, model, true);
 
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
@@ -31,16 +34,12 @@ export default async function handler(req) {
         'HTTP-Referer': siteUrl,
         'X-Title': 'Suno God Mode',
       },
-      body: JSON.stringify({
-        model: modelId,
-        messages: [{ role: 'user', content: prompt }],
-        stream: true,
-      }),
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      return new Response(JSON.stringify({ error: errorText }), {
+      return new Response(JSON.stringify({ error: parseOpenRouterErrorBody(errorText) }), {
         status: response.status,
         headers: { 'Content-Type': 'application/json' },
       });
@@ -50,11 +49,11 @@ export default async function handler(req) {
       headers: {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
+        Connection: 'keep-alive',
       },
     });
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error: error.message || 'Unknown error' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });

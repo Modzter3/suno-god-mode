@@ -1,6 +1,7 @@
 {
   "name": "suno-god-mode",
   "version": "1.0.0",
+  "type": "module",
   "description": "Suno God Mode - AI-powered song generator",
   "scripts": {
     "dev": "vercel dev",

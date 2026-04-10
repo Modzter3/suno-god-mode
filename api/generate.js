@@ -1,3 +1,5 @@
+import { buildOpenRouterChatBody, parseOpenRouterErrorBody } from './openrouter-utils.js';
+
 export const config = {
   runtime: 'edge',
 };
@@ -21,7 +23,8 @@ export default async function handler(req) {
     const siteUrl =
       process.env.OPENROUTER_SITE_URL ||
       (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://localhost');
-    const modelId = model || process.env.OPENROUTER_MODEL || 'anthropic/claude-3.5-sonnet';
+
+    const body = buildOpenRouterChatBody(prompt, model, false);
 
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
@@ -31,26 +34,31 @@ export default async function handler(req) {
         'HTTP-Referer': siteUrl,
         'X-Title': 'Suno God Mode',
       },
-      body: JSON.stringify({
-        model: modelId,
-        messages: [{ role: 'user', content: prompt }],
-      }),
+      body: JSON.stringify(body),
     });
 
+    const rawErr = await response.text();
     if (!response.ok) {
-      const errorText = await response.text();
-      return new Response(JSON.stringify({ error: errorText }), {
+      return new Response(JSON.stringify({ error: parseOpenRouterErrorBody(rawErr) }), {
         status: response.status,
         headers: { 'Content-Type': 'application/json' },
       });
     }
 
-    const data = await response.json();
-    return new Response(JSON.stringify({ content: data.choices[0].message.content }), {
+    const data = JSON.parse(rawErr);
+    const content = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+    if (content == null || content === '') {
+      return new Response(
+        JSON.stringify({ error: 'Empty response from model. Try another model in the dropdown.' }),
+        { status: 502, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    return new Response(JSON.stringify({ content }), {
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error: error.message || 'Unknown error' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });

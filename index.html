@@ -661,7 +661,7 @@ html.light .chip.suggested {
           <select id="openRouterModel"></select>
           <label style="margin-top:12px">Custom model ID (optional)</label>
           <input type="text" id="openRouterModelCustom" placeholder="Overrides dropdown — e.g. meta-llama/llama-3.3-70b-instruct" autocomplete="off">
-          <p style="margin-top:8px; font-size:12px; color:var(--text-muted); line-height:1.4">Empty = use <code style="font-size:11px">OPENROUTER_MODEL</code> on the server (Vercel env). See <a href="https://openrouter.ai/models" target="_blank" rel="noopener noreferrer">openrouter.ai/models</a>.</p>
+          <p style="margin-top:8px; font-size:12px; color:var(--text-muted); line-height:1.4">Empty = server env <code style="font-size:11px">OPENROUTER_MODEL</code>, else <code style="font-size:11px">openai/gpt-4o-mini</code>. The API retries with fallback models if your pick has no live endpoints. IDs: <a href="https://openrouter.ai/models" target="_blank" rel="noopener noreferrer">openrouter.ai/models</a>.</p>
         </div>
       </div>
       <!-- Templates -->
@@ -1529,21 +1529,19 @@ const TOPIC_NARRATIVES = [
   { name: 'Transcendence Quest', categories: ['Faith & Spirituality', 'Celebration', 'Flex & Confidence'] }
 ];
 const OPENROUTER_MODEL_OPTIONS = [
-  { value: '', label: 'Server default (OPENROUTER_MODEL env)' },
+  { value: '', label: 'Server default (OPENROUTER_MODEL or openai/gpt-4o-mini)' },
+  { value: 'openai/gpt-4o-mini', label: 'GPT-4o mini (recommended)' },
+  { value: 'openai/gpt-4o', label: 'GPT-4o' },
   { value: 'anthropic/claude-3.5-sonnet', label: 'Claude 3.5 Sonnet' },
   { value: 'anthropic/claude-3.5-haiku', label: 'Claude 3.5 Haiku' },
-  { value: 'anthropic/claude-sonnet-4', label: 'Claude Sonnet 4' },
-  { value: 'anthropic/claude-opus-4', label: 'Claude Opus 4' },
-  { value: 'openai/gpt-4o', label: 'GPT-4o' },
-  { value: 'openai/gpt-4o-mini', label: 'GPT-4o mini' },
-  { value: 'openai/o1', label: 'OpenAI o1' },
+  { value: 'anthropic/claude-sonnet-4.5', label: 'Claude Sonnet 4.5' },
+  { value: 'anthropic/claude-opus-4.5', label: 'Claude Opus 4.5' },
   { value: 'google/gemini-2.0-flash-001', label: 'Gemini 2.0 Flash' },
-  { value: 'google/gemini-pro-1.5', label: 'Gemini Pro 1.5' },
   { value: 'meta-llama/llama-3.3-70b-instruct', label: 'Llama 3.3 70B Instruct' },
   { value: 'mistralai/mistral-large-2411', label: 'Mistral Large' },
   { value: 'deepseek/deepseek-chat', label: 'DeepSeek Chat' },
   { value: 'deepseek/deepseek-r1', label: 'DeepSeek R1' },
-  { value: 'x-ai/grok-2-1212', label: 'Grok 2' }
+  { value: 'openrouter/auto', label: 'Auto (OpenRouter picks)' }
 ];
 const SUNO_RULES = `You are an expert Suno AI song creator AND a music encyclopedia who deeply understands the sonic identity of every genre and subgenre. Generate a complete song with a creative title.
 CRITICAL FORMAT RULES:
