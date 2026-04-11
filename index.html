@@ -2567,21 +2567,31 @@ async function openHistoryModal() {
   hint.textContent = 'Loading…';
   var items = [];
   try {
-    var res = await fetch('/api/history?limit=50');
+    var ac = new AbortController();
+    var t = setTimeout(function() { ac.abort(); }, 15000);
+    var res = await fetch('/api/history?limit=50', { signal: ac.signal });
+    clearTimeout(t);
     var data = await res.json().catch(function() { return {}; });
     if (data.notConfigured) {
       items = loadLocalHistory();
-      hint.textContent = 'Stored in this browser only. In Vercel: Storage → create a Postgres database and link it (POSTGRES_URL) to sync history in the cloud.';
+      hint.textContent = data.hint
+        ? data.hint
+        : 'Stored in this browser only. Link a Postgres database in Vercel (direct postgres:// URL on DATABASE_URL or POSTGRES_URL).';
     } else if (data.ok && data.items) {
       items = data.items;
-      hint.textContent = 'Stored in your project database (Neon). New generations are saved automatically after each successful run.';
+      hint.textContent = 'Stored in your project database. New generations save automatically after each run.';
     } else {
       items = loadLocalHistory();
-      hint.textContent = 'Could not load server history — showing local copies if any.';
+      var errMsg = data.error ? ' Server said: ' + data.error : '';
+      hint.textContent = 'Could not load server history.' + errMsg + ' Showing local copies if any.';
     }
   } catch (e) {
     items = loadLocalHistory();
-    hint.textContent = 'Offline or API unavailable — showing browser-only history.';
+    if (e && e.name === 'AbortError') {
+      hint.textContent = 'History request timed out (15s). Using browser-only history. Redeploy after DB changes, or check Vercel → Functions logs for /api/history.';
+    } else {
+      hint.textContent = 'Offline or API unavailable — showing browser-only history.';
+    }
   }
   if (!items.length) {
     listEl.innerHTML = '<p class="history-empty">No saved generations yet. Generate a song and it will appear here.</p>';

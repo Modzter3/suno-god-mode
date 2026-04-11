@@ -16,7 +16,7 @@ Static web app plus Vercel Edge functions that call [OpenRouter](https://openrou
 
 - In the UI, **History** lists past generations. Each successful **Generate** is saved automatically.
 - **Without a database:** entries are stored in **localStorage** in that browser only (up to 100 items).
-- **With Postgres:** in the Vercel project go to **Storage**, create or connect a **Postgres** database (Neon), and **link** it to this project. Vercel sets `POSTGRES_URL`. Redeploy if needed. The `generations` table is created on first use.
+- **With Postgres:** link **Prisma Postgres** or any Postgres in Vercel **Storage**. The env var must be a **direct** URL starting with `postgres://` or `postgresql://` (the URL you use for raw SQL / Prisma migrate). **Not** a `prisma://` Accelerate-only URL. Typical names: `POSTGRES_URL`, `DATABASE_URL`, or `POSTGRES_PRISMA_URL`. Redeploy after linking. The `generations` table is created on first use.
 - **Privacy:** the history API has no per-user auth; anyone who can open your deployed site can read or delete stored rows. For a public app, treat this as a convenience store, not private vault data.
 
 ## Local development
