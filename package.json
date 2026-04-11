@@ -7,5 +7,7 @@
     "dev": "vercel dev",
     "deploy": "vercel"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@neondatabase/serverless": "^1.0.2"
+  }
 }

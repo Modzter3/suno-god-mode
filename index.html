@@ -404,6 +404,44 @@ textarea { resize: vertical; min-height: 80px; }
 }
 .modal-close:hover { color: var(--text); }
 .modal-content { padding: 20px 24px; }
+.history-hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+  line-height: 1.4;
+}
+.history-list { display: flex; flex-direction: column; gap: 10px; }
+.history-row {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+.history-row-main { flex: 1; min-width: 200px; }
+.history-row-title { font-weight: 600; color: var(--text); margin-bottom: 4px; font-size: 0.95rem; }
+.history-row-meta { font-size: 0.72rem; color: var(--text-muted); line-height: 1.35; }
+.history-row-preview { font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; max-height: 2.6em; overflow: hidden; }
+.history-row-actions { display: flex; gap: 8px; flex-shrink: 0; align-items: center; }
+.history-action {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 6px 12px;
+  font-size: 0.72rem;
+  font-family: inherit;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.history-action:hover { border-color: var(--accent); color: var(--accent); }
+.history-action.danger:hover { border-color: var(--accent2); color: var(--accent2); }
+.history-empty { text-align: center; color: var(--text-muted); padding: 24px; font-size: 0.9rem; }
 .format-btn {
   background: var(--bg-elevated);
   border: 2px solid var(--border);
@@ -912,6 +950,9 @@ html.light .chip.suggested {
     <div class="output-panel">
       <!-- Action bar -->
       <div class="action-row">
+        <button class="action-btn" onclick="openHistoryModal()">
+          <i class="fas fa-clock-rotate-left"></i> History
+        </button>
         <button class="action-btn" onclick="openTagReference()">
           <i class="fas fa-tags"></i> Tag Reference
         </button>
@@ -986,6 +1027,18 @@ html.light .chip.suggested {
   </div>
 </div>
 <!-- Tag Reference Modal -->
+<div class="modal-overlay" id="historyModal">
+  <div class="modal" style="max-width:720px">
+    <div class="modal-top">
+      <h2>Past results</h2>
+      <button class="modal-close" onclick="closeHistoryModal()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="modal-content">
+      <p class="history-hint" id="historySourceHint">Loading…</p>
+      <div class="history-list" id="historyList"></div>
+    </div>
+  </div>
+</div>
 <div class="modal-overlay" id="tagModal">
   <div class="modal">
     <div class="modal-top">
@@ -2347,6 +2400,7 @@ async function generateSong() {
     hideLoading();
     streamEl.style.display = 'none';
     parseAndDisplay(fullContent);
+    persistGeneration(fullContent);
     isGenerating = false;
     btn.disabled = false;
     btn.innerHTML = '<i class="fas fa-bolt"></i> GENERATE SONG';
@@ -2397,6 +2451,207 @@ function parseAndDisplay(content) {
     lyricsSection.style.display = isInstrumentalMode ? 'none' : 'block';
   }
   document.getElementById('outputSections').style.display = 'block';
+}
+/* ===== GENERATION HISTORY (Postgres + localStorage fallback) ===== */
+var HISTORY_LOCAL_KEY = 'suno_god_history_v1';
+function collectGenerationMeta() {
+  var g1el = document.getElementById('genre1');
+  var g2el = document.getElementById('genre2');
+  var moodEl = document.getElementById('mood');
+  return {
+    genrePrimary: g1el ? g1el.value : '',
+    genreSecondary: g2el ? g2el.value : '',
+    mood: moodEl ? moodEl.value : '',
+    model: getOpenRouterModel(),
+    referenceArtist: currentArtist || '',
+    instrumental: isInstrumentalMode
+  };
+}
+function loadLocalHistory() {
+  try {
+    var raw = localStorage.getItem(HISTORY_LOCAL_KEY);
+    var list = raw ? JSON.parse(raw) : [];
+    return Array.isArray(list) ? list : [];
+  } catch (e) {
+    return [];
+  }
+}
+function saveHistoryLocal(payload) {
+  var list = loadLocalHistory();
+  var row = {
+    id: 'local-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
+    created_at: new Date().toISOString(),
+    title: payload.title,
+    style_prompt: payload.stylePrompt,
+    lyrics: payload.lyrics,
+    slider_settings: payload.sliderSettings,
+    genre_primary: payload.genrePrimary,
+    genre_secondary: payload.genreSecondary,
+    mood: payload.mood,
+    model: payload.model,
+    reference_artist: payload.referenceArtist,
+    instrumental: payload.instrumental,
+    raw_content: payload.rawContent
+  };
+  list.unshift(row);
+  if (list.length > 100) list = list.slice(0, 100);
+  localStorage.setItem(HISTORY_LOCAL_KEY, JSON.stringify(list));
+}
+function deleteHistoryLocal(id) {
+  var list = loadLocalHistory().filter(function(x) { return String(x.id) !== String(id); });
+  localStorage.setItem(HISTORY_LOCAL_KEY, JSON.stringify(list));
+}
+async function persistGeneration(rawContent) {
+  var meta = collectGenerationMeta();
+  var payload = {
+    title: rawTitleContent || 'Untitled',
+    stylePrompt: rawStyleContent || '',
+    lyrics: rawLyricsContent || '',
+    sliderSettings: rawSliderContent || '',
+    genrePrimary: meta.genrePrimary || null,
+    genreSecondary: meta.genreSecondary || null,
+    mood: meta.mood || null,
+    model: meta.model || null,
+    referenceArtist: meta.referenceArtist || null,
+    instrumental: meta.instrumental,
+    rawContent: rawContent || null
+  };
+  try {
+    var res = await fetch('/api/history', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    var data = await res.json().catch(function() { return {}; });
+    if (res.ok && data.ok) return;
+  } catch (e) {}
+  saveHistoryLocal(payload);
+}
+function escapeHistoryHtml(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+function applyHistoryRecord(item) {
+  var title = item.title || '';
+  var style = item.style_prompt != null ? item.style_prompt : (item.stylePrompt || '');
+  var lyrics = item.lyrics || '';
+  var sliders = item.slider_settings != null ? item.slider_settings : (item.sliderSettings || '');
+  rawTitleContent = title;
+  rawStyleContent = style;
+  rawLyricsContent = lyrics;
+  rawSliderContent = sliders || 'Weirdness: 30%\nStyle Influence: 85%';
+  document.getElementById('titleContent').innerHTML = highlightSuno(rawTitleContent);
+  document.getElementById('styleContent').innerHTML = highlightSuno(rawStyleContent);
+  document.getElementById('lyricsContent').innerHTML = highlightSuno(rawLyricsContent);
+  document.getElementById('sliderContent').innerHTML = highlightSuno(rawSliderContent);
+  var lyricsSection = document.querySelector('[id="outputSections"] .output-section:nth-child(3)');
+  if (lyricsSection) {
+    lyricsSection.style.display = item.instrumental === true ? 'none' : 'block';
+  }
+  document.getElementById('outputSections').style.display = 'block';
+  document.getElementById('emptyState').style.display = 'none';
+}
+function closeHistoryModal() {
+  document.getElementById('historyModal').classList.remove('open');
+}
+async function openHistoryModal() {
+  var modal = document.getElementById('historyModal');
+  var hint = document.getElementById('historySourceHint');
+  var listEl = document.getElementById('historyList');
+  modal.classList.add('open');
+  listEl.innerHTML = '<p class="history-empty">Loading…</p>';
+  hint.textContent = 'Loading…';
+  var items = [];
+  try {
+    var res = await fetch('/api/history?limit=50');
+    var data = await res.json().catch(function() { return {}; });
+    if (data.notConfigured) {
+      items = loadLocalHistory();
+      hint.textContent = 'Stored in this browser only. In Vercel: Storage → create a Postgres database and link it (POSTGRES_URL) to sync history in the cloud.';
+    } else if (data.ok && data.items) {
+      items = data.items;
+      hint.textContent = 'Stored in your project database (Neon). New generations are saved automatically after each successful run.';
+    } else {
+      items = loadLocalHistory();
+      hint.textContent = 'Could not load server history — showing local copies if any.';
+    }
+  } catch (e) {
+    items = loadLocalHistory();
+    hint.textContent = 'Offline or API unavailable — showing browser-only history.';
+  }
+  if (!items.length) {
+    listEl.innerHTML = '<p class="history-empty">No saved generations yet. Generate a song and it will appear here.</p>';
+    return;
+  }
+  listEl.innerHTML = items.map(function(row) {
+    var id = row.id;
+    var isLoc = String(id).indexOf('local-') === 0;
+    var dt = row.created_at ? new Date(row.created_at) : null;
+    var dtStr = dt && !isNaN(dt.getTime()) ? dt.toLocaleString() : '';
+    var g1 = row.genre_primary || '';
+    var g2 = row.genre_secondary || '';
+    var mood = row.mood || '';
+    var meta = [g1, g2].filter(Boolean).join(' · ') + (mood ? ' · ' + mood : '');
+    var prev = row.lyrics_preview || row.style_preview || '';
+    if (!prev && row.lyrics) prev = String(row.lyrics).slice(0, 120);
+    if (!prev && row.style_prompt) prev = String(row.style_prompt).slice(0, 120);
+    var title = escapeHistoryHtml(row.title || 'Untitled');
+    return '<div class="history-row" data-id="' + escapeHistoryHtml(id) + '" data-local="' + (isLoc ? '1' : '0') + '">' +
+      '<div class="history-row-main">' +
+ '<div class="history-row-title">' + title + '</div>' +
+        '<div class="history-row-meta">' + escapeHistoryHtml(dtStr) + (meta ? ' · ' + escapeHistoryHtml(meta) : '') + '</div>' +
+        (prev ? '<div class="history-row-preview">' + escapeHistoryHtml(prev) + (String(prev).length >= 120 ? '…' : '') + '</div>' : '') +
+      '</div>' +
+      '<div class="history-row-actions">' +
+        '<button type="button" class="history-action" onclick="loadHistoryEntry(\'' + String(id).replace(/'/g, "\\'") + '\',' + (isLoc ? 'true' : 'false') + ')">Load</button>' +
+        '<button type="button" class="history-action danger" onclick="deleteHistoryEntry(\'' + String(id).replace(/'/g, "\\'") + '\',' + (isLoc ? 'true' : 'false') + ')">Delete</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+async function loadHistoryEntry(id, isLocal) {
+  if (isLocal) {
+    var found = loadLocalHistory().find(function(x) { return String(x.id) === String(id); });
+    if (found) {
+      applyHistoryRecord(found);
+      showToast('Loaded from history');
+    }
+    closeHistoryModal();
+    return;
+  }
+  try {
+    var res = await fetch('/api/history?id=' + encodeURIComponent(id));
+    var data = await res.json().catch(function() { return {}; });
+    if (data.ok && data.item) {
+      applyHistoryRecord(data.item);
+      showToast('Loaded from history');
+    } else {
+      showToast('Could not load entry');
+    }
+  } catch (e) {
+    showToast('Could not load entry');
+  }
+  closeHistoryModal();
+}
+async function deleteHistoryEntry(id, isLocal) {
+  if (isLocal) {
+    deleteHistoryLocal(id);
+    await openHistoryModal();
+    showToast('Deleted');
+    return;
+  }
+  try {
+    var del = await fetch('/api/history?id=' + encodeURIComponent(id), { method: 'DELETE' });
+    if (del.ok) showToast('Deleted');
+    else showToast('Delete failed');
+  } catch (e) {
+    showToast('Delete failed');
+  }
+  await openHistoryModal();
 }
 /* ===== SYNTAX HIGHLIGHTING ===== */
 function highlightSuno(text) {
@@ -2470,7 +2725,10 @@ function copyTag(el, tag) {
     showToast('Copied: ' + tag);
   });
 }
-/* Close modal on overlay click */
+/* Close modals on overlay click */
+document.getElementById('historyModal').addEventListener('click', function(e) {
+  if (e.target === this) closeHistoryModal();
+});
 document.getElementById('tagModal').addEventListener('click', function(e) {
   if (e.target === this) closeTagReference();
 });
