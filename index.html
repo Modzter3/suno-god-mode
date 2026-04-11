@@ -1269,191 +1269,43 @@ const TAG_REFERENCE = {
   'Production': ['[Lo-fi]','[Gritty]','[Clean]','[Raw]','[Lush]','[Sparse]','[Atmospheric]','[Punchy]','[Wide stereo]','[Effect: Sidechain]','[Effect: Bitcrusher]','[Riser build]','[Bass drop]'],
   'Dynamics': ['[Soft verse | low vocal intensity]','[Power chorus | full band]','[Half-time breakdown]','[Gang shouts on last line]','[Palm-muted guitars]','[Pedal steel guitar]']
 };
-const GENRE_ARTISTS = {
-  /* ── Electronic & Dance ── */
-  'EDM': ['Calvin Harris','Martin Garrix','Marshmello','Skrillex','Zedd','David Guetta'],
-  'House': ['Disclosure','Fisher','Chris Lake','Dom Dolla','MK'],
-  'Deep House': ['Kaytranada','Peggy Gou','Lane 8','Disclosure','Nora En Pure'],
-  'Tech House': ['Fisher','Chris Lake','Dom Dolla','James Hype','John Summit'],
-  'Techno': ['Charlotte de Witte','Amelie Lens','Adam Beyer','Nina Kraviz','Richie Hawtin'],
-  'Trance': ['Armin van Buuren','Above & Beyond','Paul van Dyk','Gareth Emery','Andrew Rayel'],
-  'Dubstep': ['Skrillex','Excision','Zeds Dead','Virtual Riot','Subtronics'],
-  'Drum and Bass': ['Chase & Status','Sub Focus','Netsky','Pendulum','Andy C','Shy FX'],
-  'Ambient': ['Brian Eno','Tycho','Boards of Canada','Aphex Twin'],
-  'Synthwave': ['The Midnight','Kavinsky','Gunship','Perturbator','FM-84','Carpenter Brut'],
-  'Retrowave': ['The Midnight','Kavinsky','FM-84','Timecop1983'],
-  'Chillwave': ['Washed Out','Toro y Moi','Neon Indian','Com Truise'],
-  'Future Bass': ['Flume','San Holo','Louis The Child','Illenium','Porter Robinson'],
-  'Electro': ['Justice','Boys Noize','Mr. Oizo','SebastiAn','Gesaffelstein'],
-  'Industrial': ['Nine Inch Nails','Ministry','Rammstein','KMFDM','Skinny Puppy'],
-  'Downtempo': ['Bonobo','Tycho','Massive Attack','Thievery Corporation'],
-  'Hardstyle': ['Headhunterz','Brennan Heart','Da Tweekaz','Sub Zero Project'],
-  'Disco': ['Donna Summer','Bee Gees','KC and the Sunshine Band','Giorgio Moroder','Nile Rodgers'],
-  'Italo Disco': ['Giorgio Moroder','Claudio Simonetti','Vangelis','Moroder','Farina'],
-  'Cosmic Disco': ['Giorgio Moroder','Vangelis','Yello','Jean-Michel Jarre','Kraftwerk'],
-  'Acid House': ['Phuture','Adonis','Farley & Heller','Josh Wink','DJ Pierre'],
-  'Eurodance': ['Eiffel 65','Gina G','Aqua','Haddaway','Uncle Kracker'],
-  'Synth Punk': ['Devo','The Human League','Soft Kill','Chromatics','Perturbator'],
-  'Krautrock': ['Kraftwerk','Tangerine Dream','Neu!','Faust','Can'],
-  'Dub': ['King Tubby','Lee Perry','Peter Tosh','Scientist','Prince Jammy'],
-  /* ── Hip-Hop & R&B ── */
-  'Hip Hop': ['Kendrick Lamar','J. Cole','Drake','Tyler The Creator','JID','Denzel Curry'],
-  'Rap': ['Kendrick Lamar','Eminem','Lil Wayne','Jay-Z','Nicki Minaj','Megan Thee Stallion'],
-  'Boom Bap': ['Nas','MF DOOM','Joey Bada$$','Wu-Tang Clan','Benny The Butcher','Roc Marciano'],
-  'Trap': ['Future','Travis Scott','Young Thug','21 Savage','Gunna','Playboi Carti','Lil Baby'],
-  'Lo-fi Hip Hop': ['Nujabes','J Dilla','Tomppabeats','Idealism','Jinsang'],
-  'R&B': ['SZA','The Weeknd','Frank Ocean','Summer Walker','H.E.R.','Daniel Caesar','Brent Faiyaz'],
-  'Neo-Soul': ['Erykah Badu','D\'Angelo','Anderson .Paak','Lauryn Hill','Steve Lacy'],
-  'Soul': ['Aretha Franklin','Marvin Gaye','Stevie Wonder','Al Green','Leon Bridges'],
-  'Funk': ['Earth Wind & Fire','Parliament','Prince','James Brown','Michael Jackson','Vulfpeck','Thundercat'],
-  'Phonk': ['Freddie Dredd','PlayaPhonk','Kordhell','DVRST','DJ Smokey','Soudiere'],
-  /* ── Rock & Alternative ── */
-  'Rock': ['Foo Fighters','Royal Blood','Queens of the Stone Age','Greta Van Fleet'],
-  'Classic Rock': ['Led Zeppelin','The Rolling Stones','AC/DC','Aerosmith','Deep Purple'],
-  'Indie Rock': ['Arctic Monkeys','The Strokes','Tame Impala','Radiohead','Mac DeMarco'],
-  'Alternative Rock': ['Radiohead','Muse','The Smashing Pumpkins','Pixies','Cage The Elephant'],
-  'Pop Rock': ['Paramore','Fall Out Boy','Imagine Dragons','OneRepublic','Jimmy Eat World'],
-  'Hard Rock': ['AC/DC','Guns N\' Roses','Aerosmith','Van Halen','Wolfmother'],
-  'Punk Rock': ['Blink-182','Green Day','The Ramones','Sum 41','Bad Religion','NOFX'],
-  'Post-Punk': ['Joy Division','Bauhaus','Interpol','Fontaines D.C.','IDLES'],
-  'Grunge': ['Nirvana','Alice in Chains','Soundgarden','Pearl Jam','Stone Temple Pilots'],
-  'Heavy Metal': ['Metallica','Iron Maiden','Black Sabbath','Judas Priest','Pantera','Slayer'],
-  'Progressive Rock': ['Pink Floyd','Tool','Dream Theater','Rush','King Crimson','Porcupine Tree'],
-  'Psychedelic Rock': ['Jimi Hendrix','Pink Floyd','Tame Impala','The Doors','King Gizzard'],
-  'Shoegaze': ['My Bloody Valentine','Slowdive','Cocteau Twins','Ride','Nothing'],
-  'Emo': ['My Chemical Romance','Fall Out Boy','Dashboard Confessional','American Football','Brand New'],
-  'Nu Metal': ['Linkin Park','Korn','Slipknot','Deftones','Limp Bizkit','System of a Down'],
-  'Power Metal': ['DragonForce','Helloween','Blind Guardian','Sabaton','Powerwolf'],
-  'Glam Rock': ['David Bowie','T. Rex','Queen','Mott the Hoople','Slade'],
-  'Hair Metal': ['Mötley Crüe','Def Leppard','Poison','Twisted Sister','Warrant'],
-  'Thrash Metal': ['Metallica','Slayer','Megadeth','Exodus','Kreator'],
-  'New Wave': ['Blondie','Talking Heads','Duran Duran','Depeche Mode','The Cars'],
-  'Britpop': ['Oasis','Blur','Pulp','Suede','The Verve'],
-  'Madchester': ['Happy Mondays','The Stone Roses','New Order','Inspiral Carpets'],
-  /* ── Pop & Mainstream ── */
-  'Pop': ['Taylor Swift','Dua Lipa','Ariana Grande','Billie Eilish','The Weeknd','Olivia Rodrigo'],
-  'Synth Pop': ['Depeche Mode','The 1975','CHVRCHES','Grimes','Pet Shop Boys'],
-  'Electropop': ['Charli XCX','Grimes','Robyn','La Roux','100 gecs','Kim Petras'],
-  'Indie Pop': ['Clairo','beabadoobee','girl in red','Rex Orange County','Wallows'],
-  'Dream Pop': ['Beach House','Cocteau Twins','Mazzy Star','Cigarettes After Sex'],
-  'Art Pop': ['Björk','FKA Twigs','Kate Bush','St. Vincent','Charli XCX'],
-  'Dance Pop': ['Dua Lipa','Lady Gaga','Doja Cat','Carly Rae Jepsen','Tinashe'],
-  'K-Pop': ['BLACKPINK','BTS','Stray Kids','NewJeans','aespa','TWICE'],
-  'J-Pop': ['Hikaru Utada','Kenshi Yonezu','YOASOBI','LiSA','Ado'],
-  'City Pop': ['Tatsuro Yamashita','Mariya Takeuchi','Taeko Onuki','Junko Ohashi'],
-  /* ── Country & Folk ── */
-  'Country': ['Morgan Wallen','Luke Combs','Zach Bryan','Chris Stapleton','Jelly Roll'],
-  'Modern Country': ['Morgan Wallen','Luke Combs','Zach Bryan','Tyler Childers'],
-  'Bluegrass': ['Billy Strings','Alison Krauss','Chris Thile','Nickel Creek','Molly Tuttle'],
-  'Folk': ['Bob Dylan','Joni Mitchell','Nick Drake','Elliott Smith','Iron & Wine'],
-  'Indie Folk': ['Bon Iver','Fleet Foxes','Phoebe Bridgers','Sufjan Stevens','Gregory Alan Isakov'],
-  'Americana': ['Jason Isbell','Tyler Childers','Colter Wall','Sturgill Simpson'],
-  'Singer-Songwriter': ['Phoebe Bridgers','Elliott Smith','Jeff Buckley','Joni Mitchell','Noah Kahan'],
-  'Celtic': ['The Cranberries','Enya','Clannad','Celtic Woman','The Corrs'],
-  /* ── Jazz & Blues ── */
-  'Jazz': ['Miles Davis','John Coltrane','Kamasi Washington','Robert Glasper'],
-  'Smooth Jazz': ['Kenny G','Sade','George Benson','Norah Jones'],
-  'Bebop': ['Charlie Parker','Dizzy Gillespie','Thelonious Monk','Bud Powell'],
-  'Jazz Fusion': ['Herbie Hancock','Snarky Puppy','Pat Metheny','Weather Report'],
-  'Bossa Nova': ['João Gilberto','Antonio Carlos Jobim','Stan Getz','Astrud Gilberto'],
-  'Swing': ['Frank Sinatra','Ella Fitzgerald','Louis Armstrong','Dean Martin','Tony Bennett'],
-  'Blues': ['B.B. King','Muddy Waters','Gary Clark Jr.','Howlin\' Wolf','Stevie Ray Vaughan'],
-  'Delta Blues': ['Robert Johnson','Muddy Waters','Son House','Charley Patton'],
-  'Doo Wop': ['The Platters','Frankie Lymon & The Teenagers','The Drifters','Sha Na Na','The Coasters'],
-  /* ── World & Latin ── */
-  'Afrobeat': ['Burna Boy','Wizkid','Rema','Tems','Fela Kuti','Ayra Starr'],
-  'Reggae': ['Bob Marley','Peter Tosh','Jimmy Cliff','Damian Marley','Chronixx'],
-  'Dancehall': ['Sean Paul','Popcaan','Vybz Kartel','Shenseea','Spice','Alkaline'],
-  'Latin': ['Bad Bunny','Rosalía','J Balvin','Maluma','Rauw Alejandro'],
-  'Salsa': ['Marc Anthony','Celia Cruz','Héctor Lavoe','Willie Colón'],
-  'Reggaeton': ['Bad Bunny','Daddy Yankee','J Balvin','Ozuna','Rauw Alejandro','Karol G'],
-  'Flamenco': ['Rosalía','Paco de Lucía','Camarón de la Isla','Estrella Morente'],
-  'World Music': ['Fela Kuti','Youssou N\'Dour','Ali Farka Touré','Tinariwen'],
-  /* ── Classical & Cinematic ── */
-  'Classical': ['Beethoven','Chopin','Debussy','Rachmaninoff'],
-  'Orchestral': ['Hans Zimmer','John Williams','Howard Shore','Ennio Morricone'],
-  'Cinematic': ['Hans Zimmer','John Williams','Ennio Morricone','Ramin Djawadi','Ludwig Göransson'],
-  'Neoclassical': ['Ólafur Arnalds','Nils Frahm','Max Richter','Ludovico Einaudi'],
-  'Opera': ['Luciano Pavarotti','Andrea Bocelli','Maria Callas','Plácido Domingo'],
-  'Minimalist': ['Philip Glass','Steve Reich','Ólafur Arnalds','Nils Frahm'],
-  'Spa/Ambient': ['Kitaro','Yanni','Enya','Deva Premal','Ananda Shankar','Tan Dun','Toru Takemitsu','Hikaru Utada','Joe Hisaishi','Zhou Xuan'],
-  /* ── Worldwide Dance & Movement ── */
-  'Footwork': ['RP Boo','DJ Rashad','Jlin','DJ Spinn','Traxman'],
-  'Miami Bass': ['2 Live Crew','Uncle Luke','Khia','Lil Jon','Project Pat'],
-  'Jit': ['Veeze','Rio Da Yung OG','Collective Soul','New Boyz'],
-  'Bass Music': ['Skream','Sinden','Loefah','Benga','Joker'],
-  'Gqom': ['Sjava','Black Motion','Moonchild','Trademark','Kabza De Small'],
-  'Amapiano': ['Kabza De Small','DJ Maphorisa','Focalistic','Uncle Waffles','Major Lazer ft Amapiano Artists'],
-  'Kuduro': ['Iedil Diniz','C\'Est La Vie','Jozilton Belo','Zulapa Diniz'],
-  'Bongo Flava': ['Diamond Platnumz','Ali Kiba','Ray C','Alikiba','Tanzanian artists'],
-  'Azonto': ['Azonto Dance Group','Aziz Azion','Reggie Rockstone','Ghana artists'],
-  'Kwaito': ['Trompies','Arthur Mafokate','TKZee','Boom Shaka'],
-  'Scouse House': ['Cream','Sasha & Digweed','Scouse House Collective','Merseyside DJs'],
-  'Balti': ['Punjabi MC','Dhandholia','Apache Indian','UK Asian artists'],
-  'Afroswing': ['Wizkid','Afrobeats Artists','Dance crew innovators','African movement culture'],
-  'Dark Garage': ['Jammer','P Money','Tinchy Stryder','UK Garage veterans'],
-  'Hard Tekno': ['Surgeon','Ancient Methods','Len Faki','Andy Catalogue']
+const GENRE_ARTISTS = {};
+var NICHE_ARTISTS = {};
+
+var FALLBACK_GENRE_ARTISTS = {
+  'EDM': ['Calvin Harris','Martin Garrix','Skrillex'],
+  'Hip Hop': ['Kendrick Lamar','Drake'],
+  'Pop': ['Taylor Swift','Dua Lipa'],
+  'Trap': ['Travis Scott','Future'],
+  'UK Garage': ['MJ Cole','Artful Dodger'],
+  'Afrobeats': ['Burna Boy','Wizkid']
 };
-/* ── Niche/underground artists not covered by main genres ── */
-var NICHE_ARTISTS = {
-  'ragetrap': ['Playboi Carti','Ken Carson','Destroy Lonely','Yeat','Lancey Foux'],
-  'drill': ['Central Cee','Headie One','Digga D','Unknown T','Russ Millions'],
-  'nydrill': ['Pop Smoke','Fivio Foreign','Kay Flock','Ice Spice','Sheff G'],
-  'cloudrap': ['Bladee','Yung Lean','Bones','Lucki','Ecco2k'],
-  'memphis': ['Three 6 Mafia','Tommy Wright III','Project Pat','Lord Infamous'],
-  'jerseyclub': ['DJ Sliink','Cookiee Kawaii','Club Carlito','DJ Jayhood','Uniiqu3'],
-  'grime': ['Skepta','Stormzy','Wiley','JME','Dizzee Rascal','Novelist'],
-  'hyperpop': ['100 gecs','SOPHIE','charli xcx','AG Cook','underscores','Bladee'],
-  'witchhouse': ['Crystal Castles','Salem','oOoOO','Sidewalks and Skeletons','White Ring'],
-  'vaporwave': ['Macintosh Plus','Saint Pepsi','ESPRIT','George Clanton','Blank Banshee'],
-  'nightcore': ['nightcore-style (pitch-shifted euphoria)'],
-  'chiptune': ['Anamanaguchi','Chipzel','Sabrepulse','Disasterpeace'],
-  'deconstructed': ['SOPHIE','Arca','Oneohtrix Point Never','Lotic','Amnesia Scanner'],
-  'blackmetal': ['Mayhem','Burzum','Emperor','Darkthrone','Bathory'],
-  'doommetal': ['Electric Wizard','Sleep','Black Sabbath','Candlemass','Bell Witch'],
-  'metalcore': ['Bring Me The Horizon','Parkway Drive','Architects','Killswitch Engage','Knocked Loose'],
-  'breakcore': ['Venetian Snares','Machine Girl','Igorrr','Sewerslvt','Goreshit'],
-  'mathrock': ['Polyphia','CHON','toe','Covet','Yvette Young','Delta Sleep'],
-  'gabber': ['Angerfist','Rotterdam Terror Corps','Neophyte','The Speed Freak'],
-  'postpunk': ['Joy Division','Bauhaus','Interpol','Fontaines D.C.','IDLES','Preoccupations'],
-  'eurodance': ['Haddaway','Gina G','2 Unlimited','Eiffel 65','Enya','Patrizia Pellegrino','Dr. Alban','Captain Hollywood Project'],
-  'crunkcore': ['BrokeNCYDE','3OH!3','Breathe Carolina','Blood On The Dance Floor','Millionaires'],
-  'emorap': ['Juice WRLD','Lil Peep','XXXTentacion','nothing,nowhere.','Lil Tracy','SuicideboyS'],
-  'skramz': ['Orchid','pg.99','Saetia','Jerome\'s Dream','City of Caterpillar'],
-  'dembow': ['El Alfa','Tokischa','Rochy RD','Chimbala'],
-  'cumbia': ['Selena','Los Ángeles Azules','Celso Piña','La Sonora Dinamita'],
-  'baile': ['MC Kevin o Chris','Anitta','DJ Rennan da Penha','Ludmilla'],
-  'skapunk': ['Sublime','Less Than Jake','Reel Big Fish','The Mighty Mighty Bosstones','Goldfinger'],
-  'rnb': ['SZA','The Weeknd','Frank Ocean','Summer Walker','Brent Faiyaz','Kehlani'],
-  'neosoul': ['Erykah Badu','D\'Angelo','Anderson .Paak','Lauryn Hill','Steve Lacy'],
-  'boombap': ['Nas','MF DOOM','Joey Bada$$','Wu-Tang Clan','Benny The Butcher'],
-  'anthemictrap': ['Gesaffelstein','Boys Noize','Arca','Rustie','Hudson Mohawke','Baauer','Ekali','LIZ','Flume','Shlohmo'],
-  'phonk': ['Freddie Dredd','PlayaPhonk','Kordhell','DVRST','Soudiere'],
-  'lofi': ['Nujabes','J Dilla','Tomppabeats','Idealism','Jinsang'],
-  'ballad': ['Adele','Sam Smith','Lewis Capaldi','Sia','Whitney Houston'],
-  'cinematic': ['Hans Zimmer','John Williams','Ennio Morricone','Ramin Djawadi'],
-  'gospel': ['Kirk Franklin','Mahalia','Tasha Cobbs Leonard','Kanye West (JIK era)','Fred Hammond'],
-  'footwork': ['RP Boo','DJ Rashad','Jlin','DJ Spinn','Traxman'],
-  'miamibass': ['2 Live Crew','Uncle Luke','Khia','Lil Jon'],
-  'detroitjit': ['Veeze','Rio Da Yung OG','New Boyz'],
-  'technobass': ['Skream','Sinden','Loefah','Benga','Joker'],
-  'dubstep': ['Skrillex','Excision','Zeds Dead','Virtual Riot','Subtronics'],
-  'gqom': ['Sjava','Black Motion','Moonchild','Trademark','Kabza De Small'],
-  'amapiano': ['Kabza De Small','DJ Maphorisa','Focalistic','Uncle Waffles','Busta 929'],
-  'kuduro': ['Iedil Diniz','C\'Est La Vie','Jozilton Belo'],
-  'dancehall_electric': ['Popcaan','Shenseea','Alkaline','Vybz Kartel'],
-  'mueve': ['Bad Bunny','Rauw Alejandro','Arcángel'],
-  'perreo': ['Karol G','Nicky Jam','Zion & Lennox'],
-  'bongo': ['Diamond Platnumz','Ali Kiba','Ray C','Alikiba'],
-  'azonto': ['Aziz Azion','Reggie Rockstone','Ghana artists'],
-  'kwaito': ['Trompies','Arthur Mafokate','TKZee','Boom Shaka'],
-  'scouse': ['Leftfield','Sasha & Digweed','Scouse House Collective'],
-  'balti': ['Punjabi MC','Apache Indian','Dhandholia'],
-  'dancehall_afroswing': ['Wizkid','Afrobeats movement leaders','African dancers'],
-  'bushfire': ['Jaunt','Jack Newcome','Aus electronic pioneers'],
-  'dark_garage': ['Jammer','P Money','Tinchy Stryder'],
-  'hardtekno': ['Surgeon','Ancient Methods','Len Faki','Andy Catalogue']
+var FALLBACK_NICHE_ARTISTS = {
+  'hyperpop': ['100 gecs','charli xcx'],
+  'drill': ['Central Cee','Headie One']
 };
+
+async function loadArtistData() {
+  function assignFrom(url, target) {
+    return fetch(url).then(function(r) {
+      if (!r.ok) throw new Error(r.status + ' ' + r.statusText);
+      return r.json();
+    }).then(function(data) {
+      Object.assign(target, data);
+    });
+  }
+  try {
+    await Promise.all([
+      assignFrom('data/genre-artists.json', GENRE_ARTISTS),
+      assignFrom('data/niche-artists.json', NICHE_ARTISTS)
+    ]);
+  } catch (e) {
+    console.warn('Artist data load failed, using fallback', e);
+    Object.assign(GENRE_ARTISTS, FALLBACK_GENRE_ARTISTS);
+    Object.assign(NICHE_ARTISTS, FALLBACK_NICHE_ARTISTS);
+  }
+}
+
 /* ===== GENRE INTELLIGENCE MAP FOR MASHUP MODE ===== */
 const GENRE_INTELLIGENCE = {
   'Trap': { moods: ['Dark','Aggressive','Intense'], energies: ['High','Driving','Explosive'], bpmRange: [135, 150], keys: ['C minor','F minor','D minor'], topics: ['Flex & Confidence','Street Life','Personal Struggle'] },
@@ -1733,7 +1585,8 @@ async function loadOpenRouterModels() {
     }
   }
 }
-function init() {
+async function init() {
+  await loadArtistData();
   initTheme();
   loadOpenRouterModels();
   buildTemplateGrid();
@@ -2622,7 +2475,7 @@ document.getElementById('tagModal').addEventListener('click', function(e) {
   if (e.target === this) closeTagReference();
 });
 /* ===== START ===== */
-init();
+init().catch(function(err) { console.error(err); });
 </script>
 </body>
 </html>
